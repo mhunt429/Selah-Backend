@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selah.WebAPI", "src\Selah.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selah.Core", "src\Selah.Core\Selah.Core.csproj", "{DD236034-FED1-4CE4-AA02-7B64B2A11E25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selah.Infrastructure", "Selah.Infrastructure\Selah.Infrastructure.csproj", "{5EFEE896-7180-4426-8632-FCE40EF0F031}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selah.Infrastructure", "src/Selah.Infrastructure\Selah.Infrastructure.csproj", "{5EFEE896-7180-4426-8632-FCE40EF0F031}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selah.Application", "Selah.Application\Selah.Application.csproj", "{2CCC4C3E-247D-4397-86C2-B4C05EBB4E02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selah.Application", "src/Selah.Application\Selah.Application.csproj", "{2CCC4C3E-247D-4397-86C2-B4C05EBB4E02}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B50127D7-AB9B-4AB8-9BFB-DDA61AA5A4AC}"
 	ProjectSection(SolutionItems) = preProject
