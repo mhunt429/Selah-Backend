@@ -1,7 +1,7 @@
 CREATE TABLE transaction_category
 (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT references app_user(id)  ON DELETE SET NULL,
+    user_id UUID references app_user(id)  ON DELETE SET NULL,
     category_name TEXT
 ) inherits(base_audit_table);
 

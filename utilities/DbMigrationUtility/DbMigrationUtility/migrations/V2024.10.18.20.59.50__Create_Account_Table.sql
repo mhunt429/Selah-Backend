@@ -1,6 +1,6 @@
 CREATE TABLE account
 (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY,
     date_created        TIMESTAMPTZ,
     account_name        TEXT
 ) INHERITS(base_audit_table)

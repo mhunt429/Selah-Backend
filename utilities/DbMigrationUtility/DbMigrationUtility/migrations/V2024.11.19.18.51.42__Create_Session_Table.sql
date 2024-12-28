@@ -1,7 +1,7 @@
 CREATE TABLE session
 (
     id                  UUID PRIMARY KEY         NOT NULL,
-    user_id             BIGINT                   NOT NULL,
+    user_id             UUID                   NOT NULL,
     expiration          TIMESTAMP WITH TIME ZONE NOT NULL
 ) INHERITS(base_audit_table);
 

@@ -1,7 +1,7 @@
 CREATE TABLE app_user
 (
-    id                  BIGSERIAL PRIMARY KEY,
-    account_id          BIGSERIAL references account (id),
+    id                  UUID PRIMARY KEY,
+    account_id          UUID references account (id),
     created_date        TIMESTAMPTZ,
     encrypted_email     TEXT,
     username            VARCHAR(20),

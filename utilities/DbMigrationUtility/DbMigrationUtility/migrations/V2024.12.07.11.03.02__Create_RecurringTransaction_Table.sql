@@ -1,7 +1,7 @@
 CREATE TABLE recurring_transaction
 (
     id             BIGSERIAL PRIMARY KEY,
-    user_id BIGINT REFERENCES app_user (id) ON DELETE SET NULL,
+    user_id UUID REFERENCES app_user (id) ON DELETE SET NULL,
     upcoming_date  TIMESTAMPTZ,
     last_paid_date TIMESTAMPTZ,
     location       TEXT,

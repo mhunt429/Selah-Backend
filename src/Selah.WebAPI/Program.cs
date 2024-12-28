@@ -1,5 +1,6 @@
 using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
+using Selah.WebAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ExceptionHandler>();
 app.MapControllers();
 
 app.Run();

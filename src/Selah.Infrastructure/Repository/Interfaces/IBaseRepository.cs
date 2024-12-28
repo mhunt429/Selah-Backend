@@ -16,5 +16,5 @@ public interface IBaseRepository
 
     Task<bool> UpdateAsync(string sql, object parameters);
 
-    Task PerformTransaction<T>(List<(string, object)> transactions);
+    Task PerformTransaction(List<(string, object)> transactions);
 }

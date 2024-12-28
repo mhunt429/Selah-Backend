@@ -1,7 +1,7 @@
 CREATE TABLE transaction
 (
     id                 BIGSERIAL PRIMARY KEY,
-    user_id            BIGINT references app_user (id) ON DELETE SET NULL,
+    user_id            UUID references app_user (id) ON DELETE SET NULL,
     recurring_transaction_id BIGINT references recurring_transaction(id),
     transaction_date   TIMESTAMPTZ,
     location           TEXT,

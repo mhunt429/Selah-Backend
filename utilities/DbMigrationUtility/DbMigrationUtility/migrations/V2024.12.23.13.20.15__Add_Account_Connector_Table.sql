@@ -1,7 +1,7 @@
 CREATE TABLE account_connector
 (
     id               BIGSERIAL PRIMARY KEY,
-    user_id          BIGINT references app_user (id) ON DELETE SET NULL,
+    user_id          UUID references app_user (id) ON DELETE SET NULL,
     institution_id TEXT,
     institution_name TEXT,
     date_connected   TIMESTAMPTZ,

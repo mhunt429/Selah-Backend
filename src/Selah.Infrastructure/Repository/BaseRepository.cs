@@ -3,7 +3,7 @@ using Dapper;
 
 namespace Selah.Infrastructure.Repository;
 
-public class BaseRepository: IBaseRepository
+public class BaseRepository : IBaseRepository
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
@@ -78,23 +78,23 @@ public class BaseRepository: IBaseRepository
         }
     }
 
-    public async Task PerformTransaction<T>(List<(string, object)> transactions)
+    public async Task PerformTransaction(List<(string, object)> transactions)
     {
         using (IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync())
         {
             using (var dbTransaction = connection.BeginTransaction())
             {
-                foreach (var transaction in transactions)
+                try
                 {
-                    try
+                    foreach (var transaction in transactions)
                     {
-                        connection.Execute(transaction.Item1, transaction.Item2);
+                        await connection.ExecuteAsync(transaction.Item1, transaction.Item2);
                         dbTransaction.Commit();
                     }
-                    catch (Exception ex)
-                    {
-                        dbTransaction.Rollback();
-                    }
+                }
+                catch (Exception ex)
+                {
+                    dbTransaction.Rollback();
                 }
             }
         }
