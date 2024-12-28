@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Selah.Core\Selah.Core.csproj" />
+    <ProjectReference Include="..\Selah.Infrastructure\Selah.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

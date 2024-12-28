@@ -1,0 +1,20 @@
+using Dapper;
+
+namespace Selah.Infrastructure.Repository;
+
+public interface IBaseRepository
+{
+    Task<T> AddAsync<T>(string sql, object parameters);
+
+    Task<int> AddManyAsync<T>(string sql, IReadOnlyCollection<DynamicParameters> objectsToSave);
+
+    Task<bool> DeleteAsync(string sql, object parameters);
+
+    Task<IEnumerable<T>> GetAllAsync<T>(string sql, object parameters);
+
+    Task<T> GetFirstOrDefaultAsync<T>(string sql, object parameters);
+
+    Task<bool> UpdateAsync(string sql, object parameters);
+
+    Task PerformTransaction<T>(List<(string, object)> transactions);
+}

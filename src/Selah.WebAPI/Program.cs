@@ -1,6 +1,21 @@
+using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
+{
+    var connectionString = builder.Configuration.GetValue<string>("SelahDbConnectionString");
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new ApplicationException("No connection string configured.");
+    }
+
+    return new SelahDbConnectionFactory(connectionString);
+});
+
+builder.Services.RegisterRepositories();
 
 IConfigurationRoot configuration = builder.Configuration;
 
