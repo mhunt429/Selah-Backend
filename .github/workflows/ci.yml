@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Schema Migrations
         env:
-          DB_CONNECTION_STRING: Server=localhost;Port=5432;Database=testdb;User=root;Password=root
+          DB_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres
         run: dotnet run --project ./
         working-directory: utilities/DbMigrationUtility/DbMigrationUtility
 
