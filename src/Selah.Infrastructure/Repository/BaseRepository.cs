@@ -89,8 +89,9 @@ public class BaseRepository : IBaseRepository
                     foreach (var transaction in transactions)
                     {
                         await connection.ExecuteAsync(transaction.Item1, transaction.Item2);
-                        dbTransaction.Commit();
+                      
                     }
+                    dbTransaction.Commit();
                 }
                 catch (Exception ex)
                 {
