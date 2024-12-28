@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="ApiContracts\" />
       <Folder Include="Interfaces\Repository\" />
     </ItemGroup>
 
