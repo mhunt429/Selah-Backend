@@ -23,7 +23,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 5432:5432
+          - 65432:5432
 
     steps:
       - uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Schema Migrations
         env:
-          DB_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres
+          DB_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=localhost;Port=65432;Database=postgres
         run: dotnet run --project ./
         working-directory: utilities/DbMigrationUtility/DbMigrationUtility
 
@@ -53,7 +53,7 @@ jobs:
 
       - name: Run Tests
         env:
-          DB_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres
+          DB_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=localhost;Port=65432;Database=postgres
         run: dotnet test Selah.sln --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       #- name: Code Coverage Report
