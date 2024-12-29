@@ -6,7 +6,7 @@ public static class DatabaseExtensions
 {
     public static void RegisterRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IBaseRepository, BaseRepository>();
-        services.AddScoped<IRegistrationRepository, RegistrationRepository>();
+        services.AddScoped<IBaseRepository, BaseRepository>()
+            .AddScoped<IRegistrationRepository, RegistrationRepository>();
     }
 }

@@ -1,6 +1,7 @@
 using System.Data;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Selah.Core.ApiContracts;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
@@ -15,7 +16,6 @@ public class RegisterAccountCommand
 {
     public class Command : AccountRegistrationRequest, IRequest<BaseHttpResponse<AccessTokenResponse>>
     {
-        
     }
 
     public class Validator : AbstractValidator<Command>
@@ -45,14 +45,21 @@ public class RegisterAccountCommand
         private ICryptoService _cryptoService;
         private IPasswordHasherService _passwordHasherService;
         private ITokenService _tokenService;
-        public Handler(IRegistrationRepository registrationRepository, ICryptoService cryptoService, IPasswordHasherService passwordHasherService, ITokenService tokenService)
+        private ILogger<Handler> _logger;
+
+        public Handler(IRegistrationRepository registrationRepository, ICryptoService cryptoService,
+            IPasswordHasherService passwordHasherService, ITokenService tokenService,
+            ILogger<Handler> logger)
         {
             _registrationRepository = registrationRepository;
             _cryptoService = cryptoService;
             _passwordHasherService = passwordHasherService;
             _tokenService = tokenService;
+            _logger = logger;
         }
-        public async Task<BaseHttpResponse<AccessTokenResponse>> Handle(Command request, CancellationToken cancellationToken)
+
+        public async Task<BaseHttpResponse<AccessTokenResponse>> Handle(Command request,
+            CancellationToken cancellationToken)
         {
             var validator = new Validator();
             var validationResult = await validator.ValidateAsync(request);
@@ -65,11 +72,12 @@ public class RegisterAccountCommand
                     Errors = validationResult.Errors
                 };
             }
-            
+
             Guid userId = await _registrationRepository.RegisterAccount(MapRequestToSql(request));
-            
+
             AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId.ToString());
 
+            _logger.LogInformation("User with id {id} was successfully created", userId);
             return new BaseHttpResponse<AccessTokenResponse>
             {
                 StatusCode = 200,
@@ -86,7 +94,7 @@ public class RegisterAccountCommand
                 EncryptedName = _cryptoService.Encrypt($"{request.FirstName}|{request.LastName}"),
                 EncryptedPhone = _cryptoService.Encrypt(request.PhoneNumber),
                 PhoneVerified = false,
-                EmailVerified =false,
+                EmailVerified = false,
                 AccountName = request.AccountName
             };
         }

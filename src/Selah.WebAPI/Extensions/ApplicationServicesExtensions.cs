@@ -8,8 +8,8 @@ public static class ApplicationServicesExtensions
 {
     public static void AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
-        services.AddScoped<ICryptoService, CryptoService>();
+        services.AddScoped<ITokenService, TokenService>()
+            .AddScoped<IPasswordHasherService, PasswordHasherService>()
+            .AddScoped<ICryptoService, CryptoService>();
     }
 }

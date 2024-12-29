@@ -39,7 +39,7 @@ public static class HttpRequestExtensions
     
     private static Guid GetUserIdFromToken(string token)
     {
-        Guid userId = Guid.Empty;
+        Guid userId;
         try
         {
             var handler = new JwtSecurityTokenHandler();
