@@ -6,7 +6,7 @@ namespace Selah.Application.UnitTests.Commands;
 
 public class CreateAccountCommandUnitTests
 {
-    public CreateAccountCommand.Command _command;
+    public RegisterAccountCommand.Command _command;
 
 
     public CreateAccountCommandUnitTests()
@@ -19,7 +19,7 @@ public class CreateAccountCommandUnitTests
    [InlineData("testing123@", "@assword!")]
     public void CreateAccountCommand_ShouldValidateAgainstEmptyValue(string email, string password)
     {
-        _command = new CreateAccountCommand.Command
+        _command = new RegisterAccountCommand.Command
         {
             FirstName = "",
             LastName = "",
@@ -27,8 +27,8 @@ public class CreateAccountCommandUnitTests
             Password =password,
         };
         
-        var validator = new CreateAccountCommand.Validator();
-        TestValidationResult<CreateAccountCommand.Command>? result = validator.TestValidate(_command);
+        var validator = new RegisterAccountCommand.Validator();
+        TestValidationResult<RegisterAccountCommand.Command>? result = validator.TestValidate(_command);
         result.IsValid.Should().BeFalse();
         result.ShouldHaveValidationErrorFor(command => command.FirstName);
         result.ShouldHaveValidationErrorFor(command => command.LastName);
@@ -39,7 +39,7 @@ public class CreateAccountCommandUnitTests
     [Fact]
     public void CreateAccountCommand_ShouldAllowValidInput()
     {
-        _command = new CreateAccountCommand.Command
+        _command = new RegisterAccountCommand.Command
         {
             FirstName = "Hingle",
             LastName = "McCringleberry",
@@ -48,8 +48,8 @@ public class CreateAccountCommandUnitTests
             PasswordConfirmation = "AStrongPassword!42",
         };
         
-        var validator = new CreateAccountCommand.Validator();
-        TestValidationResult<CreateAccountCommand.Command>? result = validator.TestValidate(_command);
+        var validator = new RegisterAccountCommand.Validator();
+        TestValidationResult<RegisterAccountCommand.Command>? result = validator.TestValidate(_command);
         result.IsValid.Should().BeTrue();
     }
 }

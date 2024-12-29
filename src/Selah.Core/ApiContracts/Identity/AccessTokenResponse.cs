@@ -6,7 +6,7 @@ public class AccessTokenResponse
     
     public string RefreshToken { get; set; } = string.Empty;
     
-    public DateTimeOffset AccessTokenExpiration { get; set; }
+    public DateTime AccessTokenExpiration { get; set; }
     
-    public DateTimeOffset RefreshTokenExpiration { get; set; }
+    public DateTime RefreshTokenExpiration { get; set; }
 }

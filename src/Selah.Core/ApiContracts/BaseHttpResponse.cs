@@ -6,7 +6,7 @@ public class BaseHttpResponse<T>
 
     public T? Data { get; set; }
 
-    public List<string> Errors { get; set; } = new List<string>();
+    public List<FluentValidation.Results.ValidationFailure> Errors{ get; set; } = new List<FluentValidation.Results.ValidationFailure>();
 }
 
 /*

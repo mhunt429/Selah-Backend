@@ -4,7 +4,7 @@ namespace Selah.WebAPI.Extensions;
 
 public static class ConfigurationExtensions
 {
-    public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
+    public static void AddConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         AwsConfig awsConfig = configuration.GetSection("AwsConfig").Get<AwsConfig>();
 
@@ -35,7 +35,5 @@ public static class ConfigurationExtensions
         {
             throw new ArgumentNullException(nameof(twilioConfig));
         }
-
-        return services;
     }
 }

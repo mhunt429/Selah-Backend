@@ -16,13 +16,11 @@ builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
     return new SelahDbConnectionFactory(connectionString);
 });
 
-builder.Services.RegisterRepositories();
+
 
 IConfigurationRoot configuration = builder.Configuration;
 
-builder.Services.RegisterJwt(configuration);
-
-builder.Services.RegisterHashIds(configuration);
+builder.Services.AddDependencies(configuration);
 
 builder.Services.AddConfiguration(configuration);
 

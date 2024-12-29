@@ -4,10 +4,9 @@ namespace Selah.WebAPI.Extensions;
 
 public static class DatabaseExtensions
 {
-    public static IServiceCollection RegisterRepositories(this IServiceCollection services)
+    public static void RegisterRepositories(this IServiceCollection services)
     {
         services.AddScoped<IBaseRepository, BaseRepository>();
-
-        return services;
+        services.AddScoped<IRegistrationRepository, RegistrationRepository>();
     }
 }

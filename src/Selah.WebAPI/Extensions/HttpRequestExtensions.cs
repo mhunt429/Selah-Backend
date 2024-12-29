@@ -8,13 +8,12 @@ public static class HttpRequestExtensions
 {
     public static AppRequestContext? GetAppRequestContext(this HttpRequest request)
     {
-        var forwardedFor = request.Headers["X-Forwarded-For"].FirstOrDefault();
-        var ipAddress = !string.IsNullOrWhiteSpace(forwardedFor)
+        string? forwardedFor = request.Headers["X-Forwarded-For"].FirstOrDefault();
+        string? ipAddress = !string.IsNullOrWhiteSpace(forwardedFor)
             ? forwardedFor.Split(',').FirstOrDefault()?.Trim()
             : request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
-        // Get the "sub" claim
-        var bearerToken = request.Headers["Authorization"]
+        string? bearerToken = request.Headers["Authorization"]
             .FirstOrDefault(h => h.StartsWith("Bearer ", System.StringComparison.OrdinalIgnoreCase))
             ?.Substring("Bearer ".Length);
         
@@ -28,32 +27,36 @@ public static class HttpRequestExtensions
             return null; // No token found
         }
         
-        string? userId = GetUserIdFromToken(bearerToken);
+        Guid userId = GetUserIdFromToken(bearerToken);
 
         return new AppRequestContext
         {
-            IpAddress = ipAddress,
+            IpAddress = ipAddress ?? "",
             UserId = userId,
             TraceId = request.HttpContext.TraceIdentifier,
         };
     }
     
-    private static string? GetUserIdFromToken(string token)
+    private static Guid GetUserIdFromToken(string token)
     {
+        Guid userId = Guid.Empty;
         try
         {
             var handler = new JwtSecurityTokenHandler();
             if (handler.CanReadToken(token))
             {
                 var jwtToken = handler.ReadJwtToken(token);
-                return jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+                string subjectValue =  jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+
+                Guid.TryParse(subjectValue, out userId);
+                return userId;
             }
         }
         catch
         {
-            return null;
+            return Guid.Empty;
         }
 
-        return null; // Return null if extraction fails
+        return Guid.Empty; // Return null if extraction fails
     }
 }

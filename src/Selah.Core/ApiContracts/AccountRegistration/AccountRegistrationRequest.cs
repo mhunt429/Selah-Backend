@@ -2,7 +2,7 @@ namespace Selah.Core.ApiContracts.AccountRegistration;
 
 public class AccountRegistrationRequest
 {
-    public string? AccountName { get; set; }
+    public string AccountName { get; set; } = string.Empty;
     
     public string Username { get; set; } = string.Empty;
     

@@ -2,11 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Configuration;
+using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Infrastructure;
 
-public class TokenService
+public class TokenService: ITokenService
 {
     private readonly SecurityConfig _securityConfig;
 
@@ -15,10 +17,12 @@ public class TokenService
         _securityConfig = securityConfig;
     }
 
-    public string GenerateAccessToken(string userId)
+    public AccessTokenResponse GenerateAccessToken(string userId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = new SymmetricSecurityKey(Convert.FromBase64String(_securityConfig.JwtSecret));
+
+        DateTime accessTokenExpiration = DateTime.UtcNow.AddMinutes(_securityConfig.AccessTokenExpiryMinutes);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -26,17 +30,27 @@ public class TokenService
             {
                 new Claim("sub", userId)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(_securityConfig.AccessTokenExpiryMinutes),
+            Expires =accessTokenExpiration,
             Issuer = "selah-api",
             Audience = "selah-api",
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         };
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+        SecurityToken? token = tokenHandler.CreateToken(tokenDescriptor);
+        
+        string accessToken = tokenHandler.WriteToken(token);
+        string refreshToken = GenerateRefreshToken();
+
+        return new AccessTokenResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            AccessTokenExpiration = accessTokenExpiration,
+            RefreshTokenExpiration = DateTime.UtcNow.AddDays(_securityConfig.RefreshTokenExpiryDays)
+        };
     }
 
-    public string GenerateRefreshToken(string userId)
+    public string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
