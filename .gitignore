@@ -453,3 +453,5 @@ runLocal.sh
 tools/
 .config/
 coverage/
+
+*.env

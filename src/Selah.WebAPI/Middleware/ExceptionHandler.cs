@@ -39,7 +39,7 @@ public class ExceptionHandler
         var response = new
         {
             StatusCode = context.Response.StatusCode,
-            Message = "An unexpected error occurred. Please try again later."
+            Message = "An unexpected error occurred. It's not you; It's us."
         };
 
         return context.Response.WriteAsync(JsonSerializer.Serialize(response));

@@ -1,3 +1,7 @@
+using System.Net.NetworkInformation;
+using System.Reflection;
+using System.Runtime.Loader;
+using Selah.Application.Commands;
 using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
@@ -20,9 +24,9 @@ builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
 
 IConfigurationRoot configuration = builder.Configuration;
 
-builder.Services.AddDependencies(configuration);
-
 builder.Services.AddConfiguration(configuration);
+
+builder.Services.AddDependencies(configuration);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,6 +48,7 @@ builder.Services.AddAuthorization(options => { });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 

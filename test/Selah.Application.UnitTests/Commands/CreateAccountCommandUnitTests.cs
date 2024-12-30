@@ -3,6 +3,7 @@ using FluentValidation.TestHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Selah.Application.Commands;
+using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models.Sql.Registration;
 using Selah.Infrastructure.Repository;
@@ -16,10 +17,10 @@ public class CreateAccountCommandUnitTests
     private readonly Mock<ICryptoService> _cryptoService = new();
     private readonly Mock<IPasswordHasherService> _passwordHasherService = new();
     private readonly Mock<ITokenService> _tokenService = new();
-    private readonly Mock<ILogger<RegisterAccountCommand.Handler>> _logger = new();
+    private readonly Mock<ILogger<RegisterAccountCommand>> _logger = new();
 
-    private RegisterAccountCommand.Command _command;
-    private RegisterAccountCommand.Handler _handler;
+    private RegisterAccountCommand _command;
+
 
     private Guid _userId = Guid.NewGuid();
 
@@ -28,7 +29,7 @@ public class CreateAccountCommandUnitTests
         _registrationRepository.Setup(x => x.RegisterAccount(It.IsAny<RegistrationSql>()))
             .ReturnsAsync(_userId);
 
-        _handler = new RegisterAccountCommand.Handler(_registrationRepository.Object, _cryptoService.Object,
+        _command = new RegisterAccountCommand(_registrationRepository.Object, _cryptoService.Object,
             _passwordHasherService.Object, _tokenService.Object, _logger.Object);
 
         _tokenService.Setup(x => x.GenerateAccessToken(_userId.ToString()))
@@ -41,33 +42,11 @@ public class CreateAccountCommandUnitTests
             });
     }
 
-    [Theory]
-    [InlineData("", "")]
-    [InlineData("testing123@", "@assword!")]
-    public void CreateAccountCommand_ShouldValidateAgainstEmptyValue(string email, string password)
-    {
-        _command = new RegisterAccountCommand.Command
-        {
-            FirstName = "",
-            LastName = "",
-            Email = email,
-            Password = password,
-        };
-
-        var validator = new RegisterAccountCommand.Validator();
-        TestValidationResult<RegisterAccountCommand.Command>? result = validator.TestValidate(_command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().NotBeEmpty();
-        result.ShouldHaveValidationErrorFor(command => command.FirstName);
-        result.ShouldHaveValidationErrorFor(command => command.LastName);
-        result.ShouldHaveValidationErrorFor(command => command.Email);
-        result.ShouldHaveValidationErrorFor(command => command.Password);
-    }
 
     [Fact]
-    public void CreateAccountCommand_ShouldAllowValidInput()
+    public async Task Register_ShouldReturnAccessToken()
     {
-        _command = new RegisterAccountCommand.Command
+      var request= new AccountRegistrationRequest
         {
             FirstName = "Hingle",
             LastName = "McCringleberry",
@@ -76,30 +55,11 @@ public class CreateAccountCommandUnitTests
             PasswordConfirmation = "AStrongPassword!42",
         };
 
-        var validator = new RegisterAccountCommand.Validator();
-        TestValidationResult<RegisterAccountCommand.Command>? result = validator.TestValidate(_command);
-        result.IsValid.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task CreateAccountCommand_ShouldCreateAccount()
-    {
-        _command = new RegisterAccountCommand.Command
-        {
-            FirstName = "Hingle",
-            LastName = "McCringleberry",
-            Email = "testing123@test.com",
-            Password = "AStrongPassword!42",
-            PasswordConfirmation = "AStrongPassword!42",
-        };
-
-        var result = await _handler.Handle(_command, CancellationToken.None);
+        var result = await  _command.Register(request);
         result.Should().NotBeNull();
-        result.StatusCode.Should().Be(200);
-        result.Errors.Should().BeEmpty();
-
-        result.Data.Should().NotBeNull();
-        result?.Data?.AccessToken.Should().Be("token");
-        result?.Data?.RefreshToken.Should().Be("refreshToken");
+        result.AccessToken.Should().Be("token");
+        result.RefreshToken.Should().Be("refreshToken");
+        result.AccessTokenExpiration.Should().BeAfter(DateTime.MinValue);
+        result.RefreshTokenExpiration.Should().BeAfter(DateTime.MinValue);
     }
 }

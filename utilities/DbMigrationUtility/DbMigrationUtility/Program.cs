@@ -10,7 +10,7 @@ public class Program
         try
         {
             var connection = new NpgsqlConnection(connectionStrings.SelahDbLocal ??
-                                                  "User ID=postgres;Password=postgres;Host=localhost;Port=65432;Database=postgres");
+                                                  "User ID=postgres;Password=postgres;Host=localhost;Port=55432;Database=postgres");
             var evolve = new Evolve(connection,
                 msg => Console.WriteLine($"Beginning database migrations with {msg}"))
             {

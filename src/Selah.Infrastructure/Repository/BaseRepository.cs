@@ -89,13 +89,13 @@ public class BaseRepository : IBaseRepository
                     foreach (var transaction in transactions)
                     {
                         await connection.ExecuteAsync(transaction.Item1, transaction.Item2);
-                      
                     }
                     dbTransaction.Commit();
                 }
                 catch (Exception ex)
                 {
                     dbTransaction.Rollback();
+                    throw;
                 }
             }
         }

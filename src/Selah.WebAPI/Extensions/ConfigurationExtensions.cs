@@ -1,3 +1,4 @@
+using HashidsNet;
 using Selah.Core.Configuration;
 
 namespace Selah.WebAPI.Extensions;
@@ -30,6 +31,7 @@ public static class ConfigurationExtensions
         }
 
         services.AddSingleton(securityConfig);
+        services.AddSingleton<IHashids>(_ => new Hashids(securityConfig.HashIdSalt, minHashLength: 24));
         TwilioConfig twilioConfig = configuration.GetSection("TwilioConfig").Get<TwilioConfig>();
         if (twilioConfig == null)
         {

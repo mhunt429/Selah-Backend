@@ -6,11 +6,11 @@ public class BaseHttpResponse<T>
 
     public T? Data { get; set; }
 
-    public List<FluentValidation.Results.ValidationFailure> Errors{ get; set; } = new List<FluentValidation.Results.ValidationFailure>();
+    public IEnumerable<string> Errors{ get; set; } = Enumerable.Empty<string>();
 }
 
 /*
- * Most API commands can simply return the newly created or updated Id  so this
+ * Most API commands can simply return the newly created or updated id so this
    provides a common interface of accomplishing that
  */
 public class BaseCommandResponse
