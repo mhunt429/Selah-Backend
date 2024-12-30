@@ -2,9 +2,9 @@ namespace Selah.Core.Configuration;
 
 public class TwilioConfig
 {
-    public string ApiToken { get; set; }
+    public required string ApiToken { get; set; }
     
-    public string AccountSid { get; set; }  
+    public  required string AccountSid { get; set; }  
     
-    public string AppNumber { get; set; }
+    public required string AppNumber { get; set; }
 }

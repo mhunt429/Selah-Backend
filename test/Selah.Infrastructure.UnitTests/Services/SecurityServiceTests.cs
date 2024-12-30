@@ -9,22 +9,24 @@ namespace Selah.Infrastructure.UnitTests.Services;
 
 public class SecurityServiceTests
 {
-    private readonly Mock<IPasswordHasherService> _passwordHasherServiceMock;
-
     private readonly ICryptoService _cryptoService;
 
     public SecurityServiceTests()
     {
-        _passwordHasherServiceMock = new Mock<IPasswordHasherService>();
+        Mock<IPasswordHasherService> passwordHasherServiceMock = new();
 
         var securityConfig = new SecurityConfig
         {
-            CryptoSecret = "QXIwjylLOdmMMfhjC1nv601gyxU+EABjSvf1iADe0Qw="
+            CryptoSecret = "QXIwjylLOdmMMfhjC1nv601gyxU+EABjSvf1iADe0Qw=",
+            JwtSecret = "",
+            HashIdSalt = "",
+            AccessTokenExpiryMinutes = 60,
+            RefreshTokenExpiryDays = 30,
         };
 
         IHashids hashids = new Hashids("secretSalt", minHashLength: 24);
 
-        _cryptoService = new CryptoService(securityConfig, hashids, _passwordHasherServiceMock.Object);
+        _cryptoService = new CryptoService(securityConfig, hashids, passwordHasherServiceMock.Object);
     }
 
     [Fact]
