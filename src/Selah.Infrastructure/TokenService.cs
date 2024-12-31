@@ -35,7 +35,7 @@ public class TokenService : ITokenService
             Issuer = "selah-api",
             Audience = "selah-api",
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
         };
 
         SecurityToken? token = tokenHandler.CreateToken(tokenDescriptor);
