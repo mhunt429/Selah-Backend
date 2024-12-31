@@ -1,7 +1,7 @@
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Runtime.Loader;
-using Selah.Application.Commands;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
@@ -19,7 +19,6 @@ builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
 
     return new SelahDbConnectionFactory(connectionString);
 });
-
 
 
 IConfigurationRoot configuration = builder.Configuration;
@@ -43,6 +42,48 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
+string jwtSecret = configuration["SecurityConfig:JwtSecret"];
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = "selah-api",
+        ValidAudience = "selah-api",
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(jwtSecret)),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+    };
+    /*
+    x.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine("Token validated successfully.");
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            Console.WriteLine($"Challenge error: {context.ErrorDescription}");
+            return Task.CompletedTask;
+        }
+    };
+    */
+});
+
 builder.Services.AddAuthorization(options => { });
 
 builder.Services.AddControllers();
@@ -54,6 +95,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    IdentityModelEventSource.ShowPII = true;
     app.UseSwagger();
     app.UseSwaggerUI();
 }

@@ -12,4 +12,6 @@ public static class SqlQueries
                @encrypted_email, @username, @password, @encrypted_name, 
                @encrypted_phone, @last_login, 
                @last_login_ip, @phone_verified, @email_verified)";
+
+    public const string GetUserById = "SELECT * FROM app_user WHERE id=@id";
 }

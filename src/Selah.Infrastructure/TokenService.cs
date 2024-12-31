@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Configuration;
@@ -8,7 +9,7 @@ using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Infrastructure;
 
-public class TokenService: ITokenService
+public class TokenService : ITokenService
 {
     private readonly SecurityConfig _securityConfig;
 
@@ -20,7 +21,7 @@ public class TokenService: ITokenService
     public AccessTokenResponse GenerateAccessToken(string userId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = new SymmetricSecurityKey(Convert.FromBase64String(_securityConfig.JwtSecret));
+        byte[] key = Encoding.UTF8.GetBytes(_securityConfig.JwtSecret);
 
         DateTime accessTokenExpiration = DateTime.UtcNow.AddMinutes(_securityConfig.AccessTokenExpiryMinutes);
 
@@ -30,14 +31,15 @@ public class TokenService: ITokenService
             {
                 new Claim("sub", userId)
             }),
-            Expires =accessTokenExpiration,
+            Expires = accessTokenExpiration,
             Issuer = "selah-api",
             Audience = "selah-api",
-            SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
         SecurityToken? token = tokenHandler.CreateToken(tokenDescriptor);
-        
+
         string accessToken = tokenHandler.WriteToken(token);
         string refreshToken = GenerateRefreshToken();
 

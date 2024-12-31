@@ -9,12 +9,15 @@ namespace Selah.WebAPI.Extensions;
 
 public static class ApplicationServicesExtensions
 {
-    public static void AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services
             .AddScoped<ITokenService, TokenService>()
             .AddScoped<IPasswordHasherService, PasswordHasherService>()
             .AddScoped<ICryptoService, CryptoService>()
-            .AddScoped<IRegistrationHttpService, RegistrationHttpService>();
+            .AddScoped<IRegistrationHttpService, RegistrationHttpService>()
+            .AddScoped<IApplicationUserHttpService, ApplicationUserHttpService>();
+        
+        return services;
     }
 }
