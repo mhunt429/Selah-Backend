@@ -18,6 +18,10 @@ public class IdentityController : ControllerBase
         _applicationUserHttpService = applicationUserHttpService;
     }
 
+    /// <summary>
+    /// Endpoint to get the authenticated user by subject JWT claim
+    /// </summary>
+    /// <returns></returns>
     [Authorize]
     [HttpGet("current-user")]
     public async Task<IActionResult> GetCurrentUser()
@@ -28,6 +32,6 @@ public class IdentityController : ControllerBase
 
         BaseHttpResponse<ApplicationUser> result = await _applicationUserHttpService.GetById(userId);
 
-        return result.StatusCode == 200 ? Ok(result) : NotFound(result);
+        return result.StatusCode == 200 ? Ok(result) : Forbid();
     }
 }

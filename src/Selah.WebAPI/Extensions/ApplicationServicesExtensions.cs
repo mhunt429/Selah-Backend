@@ -16,8 +16,10 @@ public static class ApplicationServicesExtensions
             .AddScoped<IPasswordHasherService, PasswordHasherService>()
             .AddScoped<ICryptoService, CryptoService>()
             .AddScoped<IRegistrationHttpService, RegistrationHttpService>()
-            .AddScoped<IApplicationUserHttpService, ApplicationUserHttpService>();
-        
+            .AddScoped<IApplicationUserHttpService, ApplicationUserHttpService>()
+            .AddScoped<IAccountConnectorHttpService, AccountConnectorHttpService>()
+            ;
+
         return services;
     }
 }
