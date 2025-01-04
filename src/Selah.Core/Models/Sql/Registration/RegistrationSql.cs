@@ -26,4 +26,6 @@ public class RegistrationSql
     public bool EmailVerified { get; set; }
 
     public string AccountName { get; set; } = string.Empty;
+    
+    public string EmailHash { get; set; } = string.Empty;
 }

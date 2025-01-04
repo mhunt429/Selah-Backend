@@ -10,6 +10,7 @@ public static class CommandUseCaseExtensions
     {
         services.AddScoped<IRegisterAccountCommand, RegisterAccountCommand>()
             .AddScoped<ICreateLinkTokenCommand, CreateLinkTokenCommand>()
+            .AddScoped<IUserLoginCommand, UserLoginCommand>()
             ;
         return services;
     }

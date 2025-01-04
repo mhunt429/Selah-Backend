@@ -54,7 +54,8 @@ public class RegisterAccountCommand : IRegisterAccountCommand
             EncryptedPhone = _cryptoService.Encrypt(request.PhoneNumber),
             PhoneVerified = false,
             EmailVerified = false,
-            AccountName = request.AccountName
+            AccountName = request.AccountName,
+            EmailHash = _cryptoService.HashValue(request.Email),
         };
     }
 }

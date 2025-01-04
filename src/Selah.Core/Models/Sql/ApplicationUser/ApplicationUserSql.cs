@@ -3,7 +3,7 @@ namespace Selah.Core.Models.Sql.ApplicationUser;
 public class ApplicationUserSql
 {
     public Guid Id { get; set; }
-    
+
     public Guid AccountId { get; set; }
 
     public DateTimeOffset CreatedDate { get; set; }
@@ -26,5 +26,6 @@ public class ApplicationUserSql
     public bool PhoneVerified { get; set; }
 
     public bool EmailVerified { get; set; }
-   
+    
+    public string EmailHash { get; set; } = string.Empty;
 }

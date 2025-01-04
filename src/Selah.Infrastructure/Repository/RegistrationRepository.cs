@@ -14,20 +14,20 @@ public class RegistrationRepository : IRegistrationRepository
 
     public async Task<Guid> RegisterAccount(RegistrationSql registrationSql)
     {
-       Guid accountId = Guid.NewGuid();
-       Guid userId = Guid.NewGuid(); 
-        
-        (string, object) account = (SqlQueries.InsertIntoAccount, 
+        Guid accountId = Guid.NewGuid();
+        Guid userId = Guid.NewGuid();
+
+        (string, object) account = (SqlQueries.InsertIntoAccount,
             new
             {
                 original_insert = DateTimeOffset.UtcNow,
                 last_update = DateTimeOffset.UtcNow,
-                id = accountId, 
+                id = accountId,
                 app_last_changed_by = userId,
                 date_created = DateTimeOffset.UtcNow,
                 account_name = registrationSql.AccountName
             });
-        
+
         (string, object) user = (SqlQueries.InsertIntoAppUser, new
         {
             app_last_changed_by = userId,
@@ -45,14 +45,15 @@ public class RegistrationRepository : IRegistrationRepository
             last_login_ip = registrationSql.LastLoginIp,
             phone_verified = registrationSql.PhoneVerified,
             email_verified = registrationSql.EmailVerified,
+            email_hash = registrationSql.EmailHash,
         });
-        
+
         List<(string, object)> dbTransactions = new List<(string, object)>();
-        
+
         dbTransactions.Add(account);
         dbTransactions.Add(user);
         await _baseRepository.PerformTransaction(dbTransactions);
-        
+
         return userId;
     }
 }

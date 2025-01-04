@@ -16,4 +16,10 @@ public class AppUserRepository : IApplicationUserRepository
     {
         return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserSql>(SqlQueries.GetUserById, new { id });
     }
+
+    public async Task<ApplicationUserSql> GetUserByEmail(string emailHash)
+    {
+        return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserSql>(SqlQueries.GetUserByEmail,
+            new { email_hash = emailHash });
+    }
 }

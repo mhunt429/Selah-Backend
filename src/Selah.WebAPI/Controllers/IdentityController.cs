@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Selah.Core.Models;
 using Selah.Application.Services.Interfaces;
 using Selah.Core.ApiContracts;
+using Selah.Core.ApiContracts.Identity;
 using Selah.WebAPI.Extensions;
 
 namespace Selah.WebAPI.Controllers;
@@ -33,5 +34,14 @@ public class IdentityController : ControllerBase
         BaseHttpResponse<ApplicationUser> result = await _applicationUserHttpService.GetById(userId);
 
         return result.StatusCode == 200 ? Ok(result) : Forbid();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        BaseHttpResponse<AccessTokenResponse> result = await _applicationUserHttpService.LoginUser(request);
+
+        return result.StatusCode == 200 ? Ok(result) : Unauthorized(result);
     }
 }
