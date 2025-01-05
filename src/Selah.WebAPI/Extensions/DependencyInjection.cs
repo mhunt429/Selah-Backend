@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using Selah.Core.Configuration;
 using Selah.Infrastructure.Services;
@@ -5,6 +6,7 @@ using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.WebAPI.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
     public static void AddDependencies(this IServiceCollection services, IConfiguration configuration)

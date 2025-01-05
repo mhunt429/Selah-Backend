@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Selah.Core.Models;
 
 namespace Selah.WebAPI.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class HttpRequestExtensions
 {
     public static AppRequestContext? GetAppRequestContext(this HttpRequest request)

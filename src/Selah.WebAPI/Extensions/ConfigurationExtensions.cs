@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using HashidsNet;
 using Selah.Core.Configuration;
 
 namespace Selah.WebAPI.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class ConfigurationExtensions
 {
     public static void AddConfiguration(this IServiceCollection services, IConfiguration configuration)

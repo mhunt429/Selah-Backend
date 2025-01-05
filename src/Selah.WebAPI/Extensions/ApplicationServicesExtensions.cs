@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using HashidsNet;
 using Selah.Application.Services;
 using Selah.Application.Services.Interfaces;
@@ -7,6 +8,7 @@ using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.WebAPI.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class ApplicationServicesExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)

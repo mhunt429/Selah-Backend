@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Selah.Application.Commands;
 using Selah.Application.Commands.AccountConnector;
 using Selah.Application.Queries.ApplicationUser;
 
 namespace Selah.WebAPI.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class CommandUseCaseExtensions
 {
     public static IServiceCollection RegisterCommands(this IServiceCollection services)
