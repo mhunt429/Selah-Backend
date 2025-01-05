@@ -33,7 +33,7 @@ public class IdentityController : ControllerBase
 
         BaseHttpResponse<ApplicationUser> result = await _applicationUserHttpService.GetById(userId);
 
-        return result.StatusCode == 200 ? Ok(result) : Forbid();
+        return result.StatusCode == 200 ? Ok(result) : Unauthorized();
     }
 
     [AllowAnonymous]
