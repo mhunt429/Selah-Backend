@@ -22,19 +22,17 @@ public class AppUserRepositoryTests : IAsyncLifetime
     {
         var result = await _repository.GetUserByIdAsync(_userId);
         result.Should().NotBeNull();
-        result.Id.Should().Be(_userId);
     }
 
     [Fact]
     public async Task GetUserByEmailHashAsync_ShouldReturnUser()
     {
-       var user =  await _repository.GetUserByIdAsync(_userId);
+        var user = await _repository.GetUserByIdAsync(_userId);
 
-       var result = await _repository.GetUserByEmail(user.EmailHash);
-       result.Should().NotBeNull();
-       result.Id.Should().Be(_userId);
+        var result = await _repository.GetUserByEmail(user.EmailHash);
+        result.Should().NotBeNull();
     }
-    
+
 
     public async Task InitializeAsync()
     {

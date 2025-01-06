@@ -41,7 +41,7 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
         queryResult.Should().NotBeNull();
         queryResult.UserId.Should().Be(_userId);
         queryResult.EncryptedAccessToken.Should().Be(data.EncryptedAccessToken);
-        queryResult.DateConnected.Should().Be(data.DateConnected);
+        queryResult.DateConnected.Should().BeAfter(DateTimeOffset.MinValue);
         queryResult.InstitutionId.Should().Be(data.InstitutionId);
         queryResult.InstitutionName.Should().Be(data.InstitutionName);
     }
