@@ -10,7 +10,9 @@ public static class DatabaseExtensions
     {
         services.AddScoped<IBaseRepository, BaseRepository>()
             .AddScoped<IRegistrationRepository, RegistrationRepository>()
-            .AddScoped<IApplicationUserRepository, AppUserRepository>();
+            .AddScoped<IApplicationUserRepository, AppUserRepository>()
+            .AddScoped<IAccountConnectorRepository, AccountConnectorRepository>()
+            ;
         
         return services;
     }

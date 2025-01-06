@@ -19,6 +19,6 @@ public static class SqlQueries
         "SELECT * FROM app_user WHERE email_hash=@email_hash LIMIT 1";
 
     public const string InsertIntoAccountConnector =
-        @"INSERT INTO orignial_insert, last_update, user_id, institution_id, institution_name, date_connected, encrypted_access_token 
-            VALUES(@orignial_@insert, @last_update, @user_id, @institution_id, @institution_name, @date_connected, @encrypted_access_token)";
+        @"INSERT INTO account_connector (original_insert, last_update, app_last_changed_by, user_id, institution_id, institution_name, date_connected, encrypted_access_token)
+            VALUES(@original_insert, @last_update, @app_last_changed_by,  @user_id, @institution_id, @institution_name, @date_connected, @encrypted_access_token)";
 }

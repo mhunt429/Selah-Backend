@@ -19,9 +19,9 @@ public class AccountConnectorSql
 
 public class AccountConnectorInsert
 {
-    public DateTimeOffset OriginalInsert { get; set; }
+    public required DateTimeOffset OriginalInsert { get; set; }
 
-    public DateTimeOffset LastUpdate { get; set; }
+    public required DateTimeOffset LastUpdate { get; set; }
 
     public Guid AppLastChangedBy { get; set; }
 
