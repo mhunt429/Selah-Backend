@@ -14,27 +14,25 @@ public class RegistrationRepository : IRegistrationRepository
 
     public async Task<Guid> RegisterAccount(RegistrationSql registrationSql)
     {
-        Guid accountId = Guid.NewGuid();
-        Guid userId = Guid.NewGuid();
 
         (string, object) account = (SqlQueries.InsertIntoAccount,
             new
             {
                 original_insert = DateTimeOffset.UtcNow,
                 last_update = DateTimeOffset.UtcNow,
-                id = accountId,
-                app_last_changed_by = userId,
+                id = registrationSql.AccountId,
+                app_last_changed_by = registrationSql.UserId,
                 date_created = DateTimeOffset.UtcNow,
                 account_name = registrationSql.AccountName
             });
 
         (string, object) user = (SqlQueries.InsertIntoAppUser, new
         {
-            app_last_changed_by = userId,
+            app_last_changed_by = registrationSql.UserId,
             original_insert = DateTimeOffset.UtcNow,
             last_update = DateTimeOffset.UtcNow,
-            id = userId,
-            account_id = accountId,
+            id = registrationSql.UserId,
+            account_id = registrationSql.AccountId,
             created_date = registrationSql.CreatedDate,
             encrypted_email = registrationSql.EncryptedEmail,
             username = registrationSql.Username,
@@ -54,6 +52,6 @@ public class RegistrationRepository : IRegistrationRepository
         dbTransactions.Add(user);
         await _baseRepository.PerformTransaction(dbTransactions);
 
-        return userId;
+        return registrationSql.UserId;
     }
 }

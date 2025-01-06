@@ -47,6 +47,8 @@ public class RegisterAccountCommand : IRegisterAccountCommand
     {
         return new RegistrationSql
         {
+            AccountId = Guid.NewGuid(),
+            UserId = Guid.NewGuid(),
             Username = request.Username,
             Password = _passwordHasherService.HashPassword(request.Password),
             EncryptedEmail = _cryptoService.Encrypt(request.Email),

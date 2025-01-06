@@ -2,8 +2,10 @@ namespace Selah.Core.Models.Sql.Registration;
 
 public class RegistrationSql
 {
-    public Guid UserId { get; set; }
-
+    
+    public required Guid AccountId { get; set; }
+    public required Guid UserId { get; set; }
+    
     public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;
 
     public string EncryptedEmail { get; set; } = string.Empty;
@@ -26,6 +28,6 @@ public class RegistrationSql
     public bool EmailVerified { get; set; }
 
     public string AccountName { get; set; } = string.Empty;
-    
+
     public string EmailHash { get; set; } = string.Empty;
 }
