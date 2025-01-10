@@ -5,7 +5,7 @@ namespace Selah.Application.Commands.AccountConnector;
 
 public interface ICreateLinkTokenCommand
 {
-    Task<PlaidLinkToken?> CreateLinkToken(Guid userId);
+    Task<PlaidLinkToken?> Handle(Guid userId);
 }
 
 public class CreateLinkTokenCommand : ICreateLinkTokenCommand
@@ -17,7 +17,7 @@ public class CreateLinkTokenCommand : ICreateLinkTokenCommand
         _plaidHttpService = plaidHttpService;
     }
 
-    public async Task<PlaidLinkToken?> CreateLinkToken(Guid userId)
+    public async Task<PlaidLinkToken?> Handle(Guid userId)
     {
         return await _plaidHttpService.GetLinkToken(userId);
     }

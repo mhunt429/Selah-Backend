@@ -39,7 +39,7 @@ public class ConnectorControllerTests
         _accountConnectorHttpService.Setup(x => x.CreateLinkToken(It.IsAny<Guid>()))
             .ReturnsAsync(new BaseHttpResponse<PlaidLinkToken> { StatusCode = 200 });
 
-        var result = await _controller.LinkAccount();
+        var result = await _controller.GetLinkToken();
         Assert.IsType<OkObjectResult>(result);
     }
 
@@ -49,7 +49,7 @@ public class ConnectorControllerTests
         _accountConnectorHttpService.Setup(x => x.CreateLinkToken(It.IsAny<Guid>()))
             .ReturnsAsync(new BaseHttpResponse<PlaidLinkToken> { StatusCode = 400 });
 
-        var result = await _controller.LinkAccount();
+        var result = await _controller.GetLinkToken();
         Assert.IsType<BadRequestObjectResult>(result);
     }
 }

@@ -8,15 +8,17 @@ namespace Selah.Application.Services;
 public class AccountConnectorHttpService : IAccountConnectorHttpService
 {
     private readonly ICreateLinkTokenCommand _createLinkTokenCommand;
+    private readonly IExchangeLinkTokenCommand _exchangeLinkTokenCommand;
 
-    public AccountConnectorHttpService(ICreateLinkTokenCommand createLinkTokenCommand)
+    public AccountConnectorHttpService(ICreateLinkTokenCommand createLinkTokenCommand, IExchangeLinkTokenCommand exchangeLinkTokenCommand)
     {
         _createLinkTokenCommand = createLinkTokenCommand;
+        _exchangeLinkTokenCommand = exchangeLinkTokenCommand;
     }
 
     public async Task<BaseHttpResponse<PlaidLinkToken>> CreateLinkToken(Guid userId)
     {
-        PlaidLinkToken? linkToken = await _createLinkTokenCommand.CreateLinkToken(userId);
+        PlaidLinkToken? linkToken = await _createLinkTokenCommand.Handle(userId);
         {
             return new BaseHttpResponse<PlaidLinkToken>
             {
@@ -24,5 +26,10 @@ public class AccountConnectorHttpService : IAccountConnectorHttpService
                 Data = linkToken,
             };
         }
+    }
+
+    public async Task<bool> ExchangePublicToken(TokenExchangeHttpRequest request)
+    {
+     return await _exchangeLinkTokenCommand.Handle(request);
     }
 }

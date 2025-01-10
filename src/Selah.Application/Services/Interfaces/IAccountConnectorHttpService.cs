@@ -6,4 +6,7 @@ namespace Selah.Application.Services.Interfaces;
 public interface IAccountConnectorHttpService
 {
     Task<BaseHttpResponse<PlaidLinkToken>> CreateLinkToken(Guid id);
+    
+    Task<bool> ExchangePublicToken(TokenExchangeHttpRequest request);
+    
 }
