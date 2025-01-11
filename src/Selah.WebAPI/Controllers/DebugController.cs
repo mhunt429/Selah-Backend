@@ -10,7 +10,7 @@ namespace Selah.WebAPI.Controllers;
 //Utility endpoint for doing this in debug mode
 
 [ApiController]
-[DebugOnlyAsyncActionFilter]
+[TypeFilter(typeof(DebugOnlyAsyncActionFilter))]
 [Route("api/[controller]")]
 
 public class DebugController: ControllerBase

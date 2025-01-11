@@ -1,17 +1,25 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Selah.WebAPI.Filters;
 
-public class DebugOnlyAsyncActionFilter :   Attribute, IAsyncActionFilter
+public class DebugOnlyAsyncActionFilter : Attribute, IAsyncActionFilter
 {
+    private readonly IConfiguration _configuration;
+
+    public DebugOnlyAsyncActionFilter(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-#if !DEBUG
-      
-        context.Result = new NotFoundResult();
-        return;
-#endif
-        await next();
+        if (_configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") != "Development")
+        {
+            context.Result = new NotFoundResult();
+            return;
+        }
 
+        await next();
     }
 }
