@@ -25,7 +25,7 @@ public class DebugController: ControllerBase
     
     [HttpPost("decrypt")]
     [Consumes("text/plain", "application/json")]
-    public IActionResult Decrypt([FromBody] DecryptStringRequest request)
+    public IActionResult Decrypt([FromBody] DecryptStringRequest? request)
     {
         if (request == null || string.IsNullOrWhiteSpace(request.EncryptedString))
         {
