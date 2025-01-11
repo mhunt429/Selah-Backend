@@ -1,12 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
-
+using Hangfire.Dashboard.BasicAuthorization;
 
 namespace Selah.WebAPI;
 
@@ -23,12 +24,12 @@ public class Program
         var app = builder.Build();
 
         // Configure middleware and application behavior
-        ConfigureApp(app);
+        ConfigureApp(app, builder.Configuration);
 
         app.Run();
     }
 
-    private static void ConfigureServices(WebApplicationBuilder builder)
+    private static IServiceCollection ConfigureServices(WebApplicationBuilder builder)
     {
         var configuration = builder.Configuration;
 
@@ -63,6 +64,8 @@ public class Program
 
         builder.Services.AddAuthorization();
         builder.Services.AddControllers();
+        
+        return builder.Services;
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
@@ -89,7 +92,7 @@ public class Program
         });
     }
 
-    private static void ConfigureApp(WebApplication app)
+    private static void ConfigureApp(WebApplication app, IConfiguration configuration)
     {
         if (app.Environment.IsDevelopment())
         {
@@ -103,5 +106,25 @@ public class Program
         app.UseAuthorization();
         app.UseMiddleware<ExceptionHandler>();
         app.MapControllers();
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = new[]
+            {
+                new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions()
+                {
+                    SslRedirect = false,
+                    RequireSsl = false,
+                    LoginCaseSensitive = true,
+                    Users = new[]
+                    {
+                        new BasicAuthAuthorizationUser
+                        {
+                            Login = configuration.GetValue<string>("HangfireUsername"),
+                            PasswordClear = configuration.GetValue<string>("HangfirePassword")
+                        }
+                    }
+                })
+            }
+        });
     }
 }
