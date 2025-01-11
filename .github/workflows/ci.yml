@@ -43,7 +43,7 @@ jobs:
       - name: Run Schema Migrations
         env:
           DB_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=localhost;Port=65432;Database=postgres
-        run: dotnet run --project ./
+        run: dotnet run --project . -- test
         working-directory: utilities/DbMigrationUtility/DbMigrationUtility
 
       - name: Restore dependencies

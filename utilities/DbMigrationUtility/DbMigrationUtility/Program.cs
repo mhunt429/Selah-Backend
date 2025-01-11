@@ -7,21 +7,51 @@ public class Program
     {
         var connectionStrings = new ConnectionStrings();
         string location = "migrations";
+
+        if (args.Length == 0)
+        {
+           throw new Exception("No arguments specified.");
+        }
+
+        string environment = args[0].ToLower();
+
+        string connection;
+        switch (environment)
+        {
+            case "local":
+                connection = connectionStrings.Local;
+                break;
+            case "test":
+                connection = connectionStrings.Test;
+                break;
+            case "production":
+                connection = connectionStrings.Production;
+                if (string.IsNullOrEmpty(connection))
+                {
+                    throw new Exception("Error: Production connection string is not set in the environment variables.");
+                
+                }
+                break;
+            default:
+                throw new Exception("Error: Invalid environment specified. Use 'local', 'test', or 'production'.");
+        }
+
         try
         {
-            var connection = new NpgsqlConnection(connectionStrings.SelahDbLocal ??
-                                                  "User ID=postgres;Password=postgres;Host=localhost;Port=55432;Database=postgres");
-            var evolve = new Evolve(connection,
+            using var dbConnection = new NpgsqlConnection(connection);
+            var evolve = new Evolve(dbConnection, 
                 msg => Console.WriteLine($"Beginning database migrations with {msg}"))
             {
                 Locations = new[] { location }
             };
-            evolve.Migrate();
-        }
 
+            evolve.Migrate();
+            Console.WriteLine("Database migrations completed successfully.");
+        }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.StackTrace.ToString());
+            Console.WriteLine($"Error during migration: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
             throw;
         }
     }
