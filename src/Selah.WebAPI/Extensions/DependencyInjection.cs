@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Selah.Core.Configuration;
+using Selah.Infrastructure.RecurringJobs;
 using Selah.Infrastructure.Services;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -38,11 +39,12 @@ public static class DependencyInjection
     public static IServiceCollection RegisterHangfire(this IServiceCollection services, IConfiguration configuration)
     {
         string connectionString = configuration.GetValue<string>("SelahDbConnectionString");
-        services.AddHangfire(x => 
-           x.UseRecommendedSerializerSettings()
-               .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString))
-          );
+        services.AddHangfire(x =>
+            x.UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString))
+        );
         services.AddHangfireServer();
+        services.AddTransient<RecurringAccountBalanceUpdateJob>();
         return services;
     }
 }

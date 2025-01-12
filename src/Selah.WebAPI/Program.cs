@@ -8,6 +8,7 @@ using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
 using Hangfire.Dashboard.BasicAuthorization;
+using Selah.Infrastructure.RecurringJobs;
 
 namespace Selah.WebAPI;
 
@@ -126,5 +127,15 @@ public class Program
                 })
             }
         });
+
+        RegisterHangfireJobs();
+    }
+
+    private static void RegisterHangfireJobs()
+    {
+        RecurringJob.AddOrUpdate<RecurringAccountBalanceUpdateJob>(
+            methodCall: job => job.DoWork(),
+            cronExpression: Cron.Daily(3) //Run this job daily at 3 AM 
+        );
     }
 }
