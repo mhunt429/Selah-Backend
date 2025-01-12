@@ -78,6 +78,10 @@ public class BaseRepository : IBaseRepository
         }
     }
 
+    /// <summary>
+    /// Use this one when inserting into multiple tables transactionally
+    /// </summary>
+    /// <param name="transactions"></param>
     public async Task PerformTransaction(List<(string, object)> transactions)
     {
         using (IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync())
@@ -90,6 +94,36 @@ public class BaseRepository : IBaseRepository
                     {
                         await connection.ExecuteAsync(transaction.Item1, transaction.Item2);
                     }
+
+                    dbTransaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    dbTransaction.Rollback();
+                    throw;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Use this one if inserting into a single table transactionally
+    /// </summary>
+    /// <param name="transactions"></param>
+    /// <param name="sql"></param>
+    public async Task PerformTransaction(IEnumerable<DynamicParameters> transactions, string sql)
+    {
+        using (IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync())
+        {
+            using (var dbTransaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    foreach (var transaction in transactions)
+                    {
+                        await connection.ExecuteAsync(sql, transaction);
+                    }
+
                     dbTransaction.Commit();
                 }
                 catch (Exception ex)

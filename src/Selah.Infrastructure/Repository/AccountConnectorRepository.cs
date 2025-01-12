@@ -18,10 +18,10 @@ public class AccountConnectorRepository: IAccountConnectorRepository
     /// <summary>
     /// Insert into account_connector upon successful connection through Plaid or Finicity
     /// </summary>
-    public async Task InsertAccountConnectorRecord(AccountConnectorInsert accountConnectorInsert)
+    public async Task<long> InsertAccountConnectorRecord(AccountConnectorInsert accountConnectorInsert)
     {
         DynamicParameters dataToSave = accountConnectorInsert.ConvertToSnakecase();
 
-        await _baseRepository.AddAsync<int>(SqlQueries.InsertIntoAccountConnector, dataToSave);
+       return await _baseRepository.AddAsync<long>(SqlQueries.InsertIntoAccountConnector, dataToSave);
     }
 }

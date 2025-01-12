@@ -4,5 +4,5 @@ namespace Selah.Infrastructure.Repository;
 
 public interface IAccountConnectorRepository
 {
-    Task InsertAccountConnectorRecord(AccountConnectorInsert accountConnectorInsert);
+    Task<long> InsertAccountConnectorRecord(AccountConnectorInsert accountConnectorInsert);
 }

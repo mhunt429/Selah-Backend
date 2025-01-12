@@ -26,6 +26,9 @@ public class AccountConnectorInsert
     public Guid AppLastChangedBy { get; set; }
 
     public Guid UserId { get; set; }
+    
+    //Set this field for the 3rd party webhooks
+    public string ExternalEventId { get; set; }
 
     public required string InstitutionId { get; set; }
 

@@ -1,0 +1,192 @@
+using FluentAssertions;
+using Selah.Core.Models.Sql.AccountConnector;
+using Selah.Core.Models.Sql.FinancialAccount;
+using Selah.Infrastructure.Repository;
+
+namespace Selah.Infrastructure.IntegrationTests.Repository;
+
+public class FinancialAccountRepositoryTests : IAsyncLifetime
+{
+    private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+
+    private readonly IFinancialAccountRepository _financialAccountRepository;
+    private readonly IAccountConnectorRepository _accountConnectorRepository;
+
+    private Guid _accountId = Guid.NewGuid();
+    private Guid _userId = Guid.NewGuid();
+
+    private long _connectorId;
+
+    public FinancialAccountRepositoryTests()
+    {
+        _financialAccountRepository = new FinancialAccountRepository(_baseRepository);
+        _accountConnectorRepository = new AccountConnectorRepository(_baseRepository);
+    }
+
+    [Fact]
+    public async Task ImportFinancialAccountsAsync_ShouldInsertMultipleAccounts()
+    {
+        var data = new List<FinancialAccountSqlInsert>
+        {
+            new FinancialAccountSqlInsert
+            {
+                AppLastChangedBy = _userId,
+                UserId = _userId,
+                ExternalId = "1234",
+                AccountMask = "***111",
+                CurrentBalance = 100,
+                DisplayName = "My Checking",
+                OfficialName = "RBC Personal Checking",
+                Subtype = "Checking",
+                IsExternalApiImport = true,
+                LastApiImportTime = DateTimeOffset.UtcNow,
+                ConnectorId = _connectorId,
+            },
+            new FinancialAccountSqlInsert
+            {
+                AppLastChangedBy = _userId,
+                UserId = _userId,
+                ExternalId = "4321",
+                AccountMask = "***4321",
+                DisplayName = "My Saving",
+                CurrentBalance = 500,
+                OfficialName = "RBC Personal Savings",
+                Subtype = "Savings",
+                IsExternalApiImport = true,
+                LastApiImportTime = DateTimeOffset.UtcNow,
+                ConnectorId = _connectorId,
+            },
+        };
+
+        await _financialAccountRepository.ImportFinancialAccountsAsync(data);
+
+        var result = await _financialAccountRepository.GetAccountsAsync(_userId);
+
+        result.Should().NotBeNullOrEmpty();
+        result.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task AddAccountAsync_ShouldInsertNewAccount()
+    {
+        var account = new FinancialAccountSqlInsert
+        {
+            AppLastChangedBy = _userId,
+            UserId = _userId,
+            ExternalId = "4321",
+            AccountMask = "***4321",
+            DisplayName = "Vanguard Trust 401k",
+            CurrentBalance = 500,
+            OfficialName = "Vanguard Total Trust 401k",
+            Subtype = "Retirement",
+            IsExternalApiImport = true,
+            LastApiImportTime = DateTimeOffset.UtcNow,
+            ConnectorId = _connectorId,
+        };
+
+        long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
+
+        var result = await _financialAccountRepository.GetAccountByIdAsync(_userId, newAccountId);
+        result.Should().NotBeNull();
+        result.Id.Should().Be(newAccountId);
+        result.UserId.Should().Be(_userId);
+        result.ExternalId.Should().Be("4321");
+        //result.AccountMask.Should().Be("***4321");
+        result.DisplayName.Should().Be("Vanguard Trust 401k");
+        result.CurrentBalance.Should().Be(500);
+        result.OfficialName.Should().Be("Vanguard Total Trust 401k");
+        result.Subtype.Should().Be("Retirement");
+        result.IsExternalApiImport.Should().BeTrue();
+        result.LastApiImportTime.Should().BeAfter(DateTimeOffset.MinValue);
+    }
+
+    [Fact]
+    public async Task UpdateAccountAsync_ShouldUpdateAccount()
+    {
+        var account = new FinancialAccountSqlInsert
+        {
+            AppLastChangedBy = _userId,
+            UserId = _userId,
+            ExternalId = "4321",
+            AccountMask = "***4321",
+            DisplayName = "Vanguard Trust 401k",
+            CurrentBalance = 500,
+            OfficialName = "Vanguard Total Trust 401k",
+            Subtype = "Retirement",
+            IsExternalApiImport = true,
+            LastApiImportTime = DateTimeOffset.UtcNow,
+            ConnectorId = _connectorId,
+        };
+
+        long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
+
+        var accountUpdate = new FinancialAccountBalanceUpdate
+        {
+            Id = newAccountId,
+            UserId = _userId,
+            CurrentBalance = 1000
+        };
+
+        await _financialAccountRepository.UpdateAccountBalance(accountUpdate);
+        var result = await _financialAccountRepository.GetAccountByIdAsync(_userId, newAccountId);
+        result.Should().NotBeNull();
+        result.CurrentBalance.Should().Be(1000);
+    }
+
+    [Fact]
+    public async Task DeleteAccountAsync_ShouldDeleteAccount()
+    {
+        var account = new FinancialAccountSqlInsert
+        {
+            AppLastChangedBy = _userId,
+            UserId = _userId,
+            ExternalId = "4321",
+            AccountMask = "***4321",
+            DisplayName = "Vanguard Trust 401k",
+            CurrentBalance = 500,
+            OfficialName = "Vanguard Total Trust 401k",
+            Subtype = "Retirement",
+            IsExternalApiImport = true,
+            LastApiImportTime = DateTimeOffset.UtcNow,
+            ConnectorId = _connectorId,
+        };
+
+        long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
+       
+        var deleteResult = await _financialAccountRepository.DeleteAccountAsync(_userId, newAccountId);
+        deleteResult.Should().BeTrue();
+        
+        var result = await _financialAccountRepository.GetAccountByIdAsync(_userId, newAccountId);
+        result.Should().BeNull();
+    }
+
+    public async Task InitializeAsync()
+    {
+        var registrationRepository = new RegistrationRepository(_baseRepository);
+        await TestHelpers.SetUpBaseRecords(_userId, _accountId, registrationRepository);
+
+        AccountConnectorInsert data = new AccountConnectorInsert
+        {
+            AppLastChangedBy = _userId,
+            UserId = _userId,
+            OriginalInsert = DateTimeOffset.UtcNow,
+            LastUpdate = DateTimeOffset.UtcNow,
+            InstitutionId = "123",
+            InstitutionName = "Morgan Stanley",
+            DateConnected = DateTimeOffset.UtcNow,
+            EncryptedAccessToken = "token",
+            TransactionSyncCursor = ""
+        };
+        _connectorId = await _accountConnectorRepository.InsertAccountConnectorRecord(data);
+    }
+
+    public async Task DisposeAsync()
+    {
+        await TestHelpers.TearDownBaseRecords(_userId, _accountId, _baseRepository);
+        string accountConnectorDelete = "DELETE FROM account_connector WHERE user_id = @user_id";
+        await _baseRepository.DeleteAsync(accountConnectorDelete, new { user_id = _userId });
+
+        string financialAccountDelete = "DELETE FROM financial_Accounts WHERE user_id = @user_id";
+        await _baseRepository.DeleteAsync(financialAccountDelete, new { user_id = _userId });
+    }
+}

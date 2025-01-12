@@ -12,8 +12,9 @@ public static class DatabaseExtensions
             .AddScoped<IRegistrationRepository, RegistrationRepository>()
             .AddScoped<IApplicationUserRepository, AppUserRepository>()
             .AddScoped<IAccountConnectorRepository, AccountConnectorRepository>()
+            .AddScoped<IFinancialAccountRepository, FinancialAccountRepository>()
             ;
-        
+
         return services;
     }
 }

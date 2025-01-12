@@ -17,4 +17,6 @@ public interface IBaseRepository
     Task<bool> UpdateAsync(string sql, object parameters);
 
     Task PerformTransaction(List<(string, object)> transactions);
+
+    Task PerformTransaction(IEnumerable<DynamicParameters> transactions, string sql);
 }
