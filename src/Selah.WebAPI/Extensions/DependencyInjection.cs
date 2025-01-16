@@ -1,7 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using Hangfire;
 using Hangfire.PostgreSql;
+using MassTransit;
 using Selah.Core.Configuration;
 using Selah.Infrastructure.RecurringJobs;
 using Selah.Infrastructure.Services;
@@ -20,6 +23,7 @@ public static class DependencyInjection
             .AddApplicationServices()
             .AddHttpClients(configuration)
             .RegisterHangfire(configuration)
+            .RegisterRabbitMq(configuration)
             ;
     }
 
@@ -45,6 +49,50 @@ public static class DependencyInjection
         );
         services.AddHangfireServer();
         services.AddTransient<RecurringAccountBalanceUpdateJob>();
+        return services;
+    }
+
+    public static IServiceCollection RegisterRabbitMq(this IServiceCollection services, IConfiguration configuration)
+    {
+        RabbitMqConfig rabbitMqConfig = configuration.GetSection("RabbitMq").Get<RabbitMqConfig>();
+        if (rabbitMqConfig == null)
+        {
+            throw new NullReferenceException("RabbitMq configuration is null");
+        }
+
+        services.AddMassTransit(x =>
+        {
+            x.SetKebabCaseEndpointNameFormatter();
+            x.SetInMemorySagaRepositoryProvider();
+            var assembly = typeof(Program).Assembly;
+            x.AddConsumers(assembly);
+            x.AddSagaStateMachines(assembly);
+            x.AddSagas(assembly);
+            x.AddActivities(assembly);
+            x.UsingRabbitMq((context, configuration) =>
+            {
+                configuration.Host(rabbitMqConfig.Host);
+                configuration.Host(rabbitMqConfig.Host, hostConfigurator =>
+                {
+                    hostConfigurator.Username(rabbitMqConfig.UserName);
+                    hostConfigurator.Password(rabbitMqConfig.Password);
+                    if (rabbitMqConfig.UseSsl)
+                    {
+                        hostConfigurator.UseSsl(s =>
+                        {
+                            s.Protocol = SslProtocols.Tls13;
+                            s.ServerName = rabbitMqConfig.SslServerName;
+                            var clientCertificate = new X509Certificate2(
+                                rabbitMqConfig.ClientCertificatePath, 
+                                rabbitMqConfig.ClientCertificatePassword 
+                            );
+                            s.Certificate = clientCertificate;
+                        });
+                    }
+                });
+            });
+        });
+
         return services;
     }
 }

@@ -1,5 +1,6 @@
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Infrastructure.RecurringJobs;
 
@@ -7,10 +8,12 @@ namespace Selah.Infrastructure.RecurringJobs;
 public class RecurringAccountBalanceUpdateJob
 {
     private readonly ILogger<RecurringAccountBalanceUpdateJob> _logger;
+    private readonly IPlaidHttpService _plaidHttpService;
 
-    public RecurringAccountBalanceUpdateJob(ILogger<RecurringAccountBalanceUpdateJob> logger)
+    public RecurringAccountBalanceUpdateJob(ILogger<RecurringAccountBalanceUpdateJob> logger, IPlaidHttpService plaidHttpService)
     {
         _logger = logger;
+        _plaidHttpService = plaidHttpService;
     }
 
 
