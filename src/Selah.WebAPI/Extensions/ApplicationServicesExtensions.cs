@@ -17,7 +17,6 @@ public static class ApplicationServicesExtensions
             .AddScoped<ITokenService, TokenService>()
             .AddScoped<IPasswordHasherService, PasswordHasherService>()
             .AddScoped<ICryptoService, CryptoService>()
-            .AddScoped<IRegistrationHttpService, RegistrationHttpService>()
             .AddScoped<IAccountConnectorHttpService, AccountConnectorHttpService>()
             ;
 

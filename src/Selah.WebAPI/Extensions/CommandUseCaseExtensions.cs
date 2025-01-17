@@ -10,8 +10,7 @@ public static class CommandUseCaseExtensions
 {
     public static IServiceCollection RegisterCommands(this IServiceCollection services)
     {
-        services.AddScoped<IRegisterAccountCommand, RegisterAccountCommand>()
-            .AddScoped<ICreateLinkTokenCommand, CreateLinkTokenCommand>()
+        services.AddScoped<ICreateLinkTokenCommand, CreateLinkTokenCommand>()
             .AddScoped<IExchangeLinkTokenCommand, ExchangeLinkTokenCommand>()
             ;
         return services;

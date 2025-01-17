@@ -3,6 +3,7 @@ using FluentValidation.TestHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Selah.Application.Commands;
+using Selah.Application.Registration;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models.Sql.Registration;
@@ -17,9 +18,9 @@ public class CreateAccountCommandUnitTests
     private readonly Mock<ICryptoService> _cryptoService = new();
     private readonly Mock<IPasswordHasherService> _passwordHasherService = new();
     private readonly Mock<ITokenService> _tokenService = new();
-    private readonly Mock<ILogger<RegisterAccountCommand>> _logger = new();
+    private readonly Mock<ILogger<RegisterAccount.Handler>> _logger = new();
 
-    private RegisterAccountCommand _command;
+    private RegisterAccount.Handler _handler;
 
 
     private Guid _userId = Guid.NewGuid();
@@ -29,7 +30,7 @@ public class CreateAccountCommandUnitTests
         _registrationRepository.Setup(x => x.RegisterAccount(It.IsAny<RegistrationSql>()))
             .ReturnsAsync(_userId);
 
-        _command = new RegisterAccountCommand(_registrationRepository.Object, _cryptoService.Object,
+        _handler = new RegisterAccount.Handler(_registrationRepository.Object, _cryptoService.Object,
             _passwordHasherService.Object, _tokenService.Object, _logger.Object);
 
         _tokenService.Setup(x => x.GenerateAccessToken(_userId.ToString()))
@@ -46,16 +47,19 @@ public class CreateAccountCommandUnitTests
     [Fact]
     public async Task Register_ShouldReturnAccessToken()
     {
-      var request= new AccountRegistrationRequest
+        var command = new RegisterAccount.Command
         {
-            FirstName = "Hingle",
-            LastName = "McCringleberry",
-            Email = "testing123@test.com",
-            Password = "AStrongPassword!42",
-            PasswordConfirmation = "AStrongPassword!42",
+            Request = new AccountRegistrationRequest
+            {
+                FirstName = "Hingle",
+                LastName = "McCringleberry",
+                Email = "testing123@test.com",
+                Password = "AStrongPassword!42",
+                PasswordConfirmation = "AStrongPassword!42",
+            }
         };
 
-        var result = await  _command.Register(request);
+        var result = await _handler.Handle(command, CancellationToken.None);
         result.Should().NotBeNull();
         result.AccessToken.Should().Be("token");
         result.RefreshToken.Should().Be("refreshToken");
