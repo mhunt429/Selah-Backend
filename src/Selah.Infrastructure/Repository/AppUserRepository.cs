@@ -12,7 +12,7 @@ public class AppUserRepository : IApplicationUserRepository
         _baseRepository = baseRepository;
     }
 
-    public async Task<ApplicationUserSql> GetUserByIdAsync(Guid id)
+    public async Task<ApplicationUserSql?> GetUserByIdAsync(Guid id)
     {
         return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserSql>(SqlQueries.GetUserById, new { id });
     }

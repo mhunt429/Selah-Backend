@@ -1,4 +1,3 @@
-using Selah.Core.ApiContracts;
 using Selah.Core.Models.Sql.ApplicationUser;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -10,10 +9,10 @@ public static class AppUserMappings
     /// Takes a record from the app_user table and maps it to the API response for a given user
     /// </summary>
     /// <param name="user"></param>
-    public static ApplicationUser MapAppUserDataAccessToApiContract(this ApplicationUserSql user, ICryptoService cryptoService)
+    public static Core.ApiContracts.ApplicationUser MapAppUserDataAccessToApiContract(this ApplicationUserSql user, ICryptoService cryptoService)
     {
         string[] parsedName = cryptoService.Decrypt(user.EncryptedName).Split("|");
-        return new ApplicationUser
+        return new Core.ApiContracts.ApplicationUser
         {
             Id = user.Id,
             AccountId = user.AccountId,

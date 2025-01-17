@@ -8,6 +8,7 @@ using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
 using Hangfire.Dashboard.BasicAuthorization;
+using Selah.Application.ApplicationUser;
 using Selah.Infrastructure.RecurringJobs;
 
 namespace Selah.WebAPI;
@@ -33,6 +34,9 @@ public class Program
     private static IServiceCollection ConfigureServices(WebApplicationBuilder builder)
     {
         var configuration = builder.Configuration;
+        
+        //Because of the automatic dependency injection with mediatr and we have all of that in the Application Project, we just need to pass in a single IRequest instance
+        builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining(typeof(GetUserById.Query)));
 
         builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
         {
@@ -48,6 +52,8 @@ public class Program
 
         builder.Services.AddConfiguration(configuration);
         builder.Services.AddDependencies(configuration);
+
+
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -65,7 +71,7 @@ public class Program
 
         builder.Services.AddAuthorization();
         builder.Services.AddControllers();
-        
+
         return builder.Services;
     }
 

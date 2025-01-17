@@ -54,7 +54,7 @@ public static class DependencyInjection
 
     public static IServiceCollection RegisterRabbitMq(this IServiceCollection services, IConfiguration configuration)
     {
-        RabbitMqConfig rabbitMqConfig = configuration.GetSection("RabbitMq").Get<RabbitMqConfig>();
+        RabbitMqConfig rabbitMqConfig = configuration.GetSection("RabbitMQSettings").Get<RabbitMqConfig>();
         if (rabbitMqConfig == null)
         {
             throw new NullReferenceException("RabbitMq configuration is null");
@@ -83,8 +83,7 @@ public static class DependencyInjection
                             s.Protocol = SslProtocols.Tls13;
                             s.ServerName = rabbitMqConfig.SslServerName;
                             var clientCertificate = new X509Certificate2(
-                                rabbitMqConfig.ClientCertificatePath, 
-                                rabbitMqConfig.ClientCertificatePassword 
+                                rabbitMqConfig.ClientCertificatePath
                             );
                             s.Certificate = clientCertificate;
                         });

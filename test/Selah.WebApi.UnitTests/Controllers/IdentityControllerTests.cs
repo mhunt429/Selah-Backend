@@ -1,7 +1,9 @@
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Selah.Application.Services.Interfaces;
+using Selah.Application.Identity;
+using Selah.Application.ApplicationUser;
 using Selah.Core.ApiContracts;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models;
@@ -11,7 +13,7 @@ namespace Selah.WebApi.UnitTests;
 
 public class IdentityControllerTests
 {
-    private readonly Mock<IApplicationUserHttpService> _applicationUserHttpService;
+    private readonly Mock<IMediator> _mediatorMock = new();
 
     private IdentityController _controller;
 
@@ -20,7 +22,6 @@ public class IdentityControllerTests
         var userId = Guid.NewGuid();
         var appRequestContext = new AppRequestContext { UserId = userId };
 
-        _applicationUserHttpService = new Mock<IApplicationUserHttpService>();
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers.Authorization = "Bearer my_token";
 
@@ -29,25 +30,32 @@ public class IdentityControllerTests
             HttpContext = httpContext,
         };
 
-        _controller = new IdentityController(_applicationUserHttpService.Object)
+        _controller = new IdentityController(_mediatorMock.Object)
             { ControllerContext = controllerContext };
     }
 
     [Fact]
     public async Task GetUserAsync_ShouldReturnUser()
     {
-        _applicationUserHttpService.Setup(x => x.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(new BaseHttpResponse<ApplicationUser> { StatusCode = 200 });
-
+        _mediatorMock.Setup(x => x.Send(It.IsAny<GetUserById.Query>(), default))
+            .ReturnsAsync(new ApplicationUser
+            {
+                Id = Guid.NewGuid(),
+                AccountId = Guid.NewGuid(),
+                Email = "test@test.com",
+                Username = "test",
+                FirstName = "Test",
+                LastName = "User"
+            });
         var result = await _controller.GetCurrentUser();
         Assert.IsType<OkObjectResult>(result);
     }
-    
+
     [Fact]
     public async Task GetUserAsync_ShouldUnAuthorized_WhenUserIsNotFound()
     {
-        _applicationUserHttpService.Setup(x => x.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(new BaseHttpResponse<ApplicationUser> { StatusCode = 401 });
+        _mediatorMock.Setup(x => x.Send(It.IsAny<GetUserById.Query>(), default))
+            .ReturnsAsync((ApplicationUser)null);
 
         var result = await _controller.GetCurrentUser();
         Assert.IsType<UnauthorizedResult>(result);
@@ -56,18 +64,20 @@ public class IdentityControllerTests
     [Fact]
     public async Task Login_ShouldReturnAccessToken()
     {
-        _applicationUserHttpService.Setup(x => x.LoginUser(It.IsAny<LoginRequest>()))
-            .ReturnsAsync(new BaseHttpResponse<AccessTokenResponse> { StatusCode = 200 });
+        _mediatorMock.Setup(x => x.Send(It.IsAny<UserLogin.Command>(), default)).ReturnsAsync(new UserLogin.Response
+        {
+            Data = new AccessTokenResponse()
+        });
+
         var result = await _controller.Login(new LoginRequest());
         Assert.IsType<OkObjectResult>(result);
     }
-    
+
     [Fact]
     public async Task Login_ShouldReturnUnAuthorized_OnInvalidLoginRequest()
     {
-        _applicationUserHttpService.Setup(x => x.LoginUser(It.IsAny<LoginRequest>()))
-            .ReturnsAsync(new BaseHttpResponse<AccessTokenResponse> { StatusCode = 401 });
+        _mediatorMock.Setup(x => x.Send(It.IsAny<UserLogin.Command>(), default)).ReturnsAsync((UserLogin.Response)null);
         var result = await _controller.Login(new LoginRequest());
-        Assert.IsType<UnauthorizedObjectResult>(result);
+        Assert.IsType<UnauthorizedResult>(result);
     }
 }

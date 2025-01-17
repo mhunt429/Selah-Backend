@@ -1,7 +1,10 @@
+using System.Net;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Selah.Application.ApplicationUser;
+using Selah.Application.Identity;
 using Selah.Core.Models;
-using Selah.Application.Services.Interfaces;
 using Selah.Core.ApiContracts;
 using Selah.Core.ApiContracts.Identity;
 using Selah.WebAPI.Extensions;
@@ -12,11 +15,11 @@ namespace Selah.WebAPI.Controllers;
 [Route("api/[controller]")]
 public class IdentityController : ControllerBase
 {
-    private readonly IApplicationUserHttpService _applicationUserHttpService;
+    private readonly IMediator _mediatr;
 
-    public IdentityController(IApplicationUserHttpService applicationUserHttpService)
+    public IdentityController(IMediator mediatr)
     {
-        _applicationUserHttpService = applicationUserHttpService;
+        _mediatr = mediatr;
     }
 
     /// <summary>
@@ -31,17 +34,29 @@ public class IdentityController : ControllerBase
 
         Guid userId = requestContext.UserId;
 
-        BaseHttpResponse<ApplicationUser> result = await _applicationUserHttpService.GetById(userId);
+        var query = new GetUserById.Query { UserId = userId };
+        ApplicationUser? result = await _mediatr.Send(query);
+        if (result == null)
+        {
+            return Unauthorized();
+        }
 
-        return result.StatusCode == 200 ? Ok(result) : Unauthorized();
+        return Ok(result.ToBaseHttpResponse(HttpStatusCode.OK));
     }
 
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        BaseHttpResponse<AccessTokenResponse> result = await _applicationUserHttpService.LoginUser(request);
+        var command = new UserLogin.Command { LoginRequest = request };
 
-        return result.StatusCode == 200 ? Ok(result) : Unauthorized(result);
+        var result = await _mediatr.Send(command);
+
+        if (result == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(result.ToBaseHttpResponse(HttpStatusCode.OK));
     }
 }
