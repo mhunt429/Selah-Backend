@@ -1,10 +1,7 @@
 using FluentAssertions;
-using FluentValidation.TestHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Selah.Application.Commands;
 using Selah.Application.Registration;
-using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models.Sql.Registration;
 using Selah.Infrastructure.Repository;
@@ -49,14 +46,11 @@ public class CreateAccountCommandUnitTests
     {
         var command = new RegisterAccount.Command
         {
-            Request = new AccountRegistrationRequest
-            {
-                FirstName = "Hingle",
-                LastName = "McCringleberry",
-                Email = "testing123@test.com",
-                Password = "AStrongPassword!42",
-                PasswordConfirmation = "AStrongPassword!42",
-            }
+            FirstName = "Hingle",
+            LastName = "McCringleberry",
+            Email = "testing123@test.com",
+            Password = "AStrongPassword!42",
+            PasswordConfirmation = "AStrongPassword!42",
         };
 
         var result = await _handler.Handle(command, CancellationToken.None);

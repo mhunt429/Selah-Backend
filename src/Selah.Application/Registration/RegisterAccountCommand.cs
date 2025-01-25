@@ -1,11 +1,8 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Selah.Application.ApplicationUser;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models.Sql.Registration;
-using Selah.Infrastructure;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -13,9 +10,9 @@ namespace Selah.Application.Registration;
 
 public class RegisterAccount
 {
-    public class Command : IRequest<AccessTokenResponse>
+    public class Command : AccountRegistrationRequest, IRequest<AccessTokenResponse>
     {
-        public AccountRegistrationRequest Request { get; set; }
+       
     }
 
     public class Handler : IRequestHandler<Command, AccessTokenResponse>
@@ -38,7 +35,7 @@ public class RegisterAccount
 
         public async Task<AccessTokenResponse> Handle(Command command, CancellationToken cancellationToken)
         {
-            Guid userId = await _registrationRepository.RegisterAccount(MapRequestToSql(command.Request));
+            Guid userId = await _registrationRepository.RegisterAccount(MapRequestToSql(command));
 
             AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId.ToString());
 

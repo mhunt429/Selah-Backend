@@ -1,8 +1,8 @@
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Selah.Application.Services.Interfaces;
-using Selah.Core.ApiContracts;
+using Selah.Application.AccountConnector;
 using Selah.Core.Models;
 using Selah.Core.Models.Plaid;
 using Selah.WebAPI.Controllers;
@@ -11,7 +11,7 @@ namespace Selah.WebApi.UnitTests.Controllers;
 
 public class ConnectorControllerTests
 {
-    private readonly Mock<IAccountConnectorHttpService> _accountConnectorHttpService;
+    private readonly Mock<IMediator> _mediatorMock = new();
 
     private ConnectorController _controller;
 
@@ -20,7 +20,6 @@ public class ConnectorControllerTests
         var userId = Guid.NewGuid();
         var appRequestContext = new AppRequestContext { UserId = userId };
 
-        _accountConnectorHttpService = new Mock<IAccountConnectorHttpService>();
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers.Authorization = "Bearer my_token";
 
@@ -29,27 +28,18 @@ public class ConnectorControllerTests
             HttpContext = httpContext,
         };
 
-        _controller = new ConnectorController(_accountConnectorHttpService.Object)
+        _controller = new ConnectorController(_mediatorMock.Object)
             { ControllerContext = controllerContext };
     }
 
     [Fact]
     public async Task LinkAccount_ShouldReturnSuccess_WhenLinkAccountIsSuccessful()
     {
-        _accountConnectorHttpService.Setup(x => x.CreateLinkToken(It.IsAny<Guid>()))
-            .ReturnsAsync(new BaseHttpResponse<PlaidLinkToken> { StatusCode = 200 });
+        _mediatorMock.Setup(x => x.Send(It.IsAny<CreateLinkToken.Command>(), CancellationToken.None))
+            .ReturnsAsync(new PlaidLinkToken{LinkToken = "Token123"});
 
         var result = await _controller.GetLinkToken();
         Assert.IsType<OkObjectResult>(result);
     }
-
-    [Fact]
-    public async Task LinkAccount_ShouldReturnBadRequest_WhenLinkAccountIsUnSuccessful()
-    {
-        _accountConnectorHttpService.Setup(x => x.CreateLinkToken(It.IsAny<Guid>()))
-            .ReturnsAsync(new BaseHttpResponse<PlaidLinkToken> { StatusCode = 400 });
-
-        var result = await _controller.GetLinkToken();
-        Assert.IsType<BadRequestObjectResult>(result);
-    }
+  
 }

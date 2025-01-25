@@ -1,44 +1,49 @@
+using System.Net;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Selah.Application.Services.Interfaces;
+using Selah.Application.AccountConnector;
 using Selah.Core.Models;
 using Selah.Core.Models.Plaid;
 using Selah.WebAPI.Extensions;
+using Selah.WebAPI.Filters;
 
 namespace Selah.WebAPI.Controllers;
 
 [ApiController]
 [Authorize]
+[ValidAppRequestContextFilter]
 [Route("api/[controller]")]
 public class ConnectorController : ControllerBase
 {
-    private readonly IAccountConnectorHttpService _accountConnectorHttpService;
+    private readonly IMediator _mediator;
 
-    public ConnectorController(IAccountConnectorHttpService accountConnectorHttpService)
+    public ConnectorController(IMediator mediator)
     {
-        _accountConnectorHttpService = accountConnectorHttpService;
+        _mediator = mediator;
     }
 
     [HttpGet("link")]
     public async Task<IActionResult> GetLinkToken()
     {
-        AppRequestContext? requestContext = Request.GetAppRequestContext();
+        AppRequestContext requestContext = Request.GetAppRequestContext();
         Guid userId = requestContext.UserId;
-        
-        var result = await _accountConnectorHttpService.CreateLinkToken(userId);
-        return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
+
+        PlaidLinkToken result = await _mediator.Send(new CreateLinkToken.Command { UserId = userId });
+
+        return Ok(result.ToBaseHttpResponse(HttpStatusCode.OK));
     }
 
     [HttpPost("exchange")]
-    public async Task<IActionResult> ExchangeToken([FromBody] TokenExchangeHttpRequest request)
+    public async Task<IActionResult> ExchangeToken([FromBody] ExchangeLinkToken.Command request)
     {
-        AppRequestContext? requestContext = Request.GetAppRequestContext();
+        AppRequestContext requestContext = Request.GetAppRequestContext();
         Guid userId = requestContext.UserId;
-        
+
         request.UserId = userId;
 
-        bool exchangeResult = await _accountConnectorHttpService.ExchangePublicToken(request);
-        
-       return exchangeResult ? NoContent() : BadRequest();
+        bool success = await _mediator.Send(request);
+
+        return success ? NoContent() : BadRequest();
     }
 }

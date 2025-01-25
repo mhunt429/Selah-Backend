@@ -37,7 +37,7 @@ public class IdentityControllerTests
     [Fact]
     public async Task GetUserAsync_ShouldReturnUser()
     {
-        _mediatorMock.Setup(x => x.Send(It.IsAny<GetUserById.Query>(), default))
+        _mediatorMock.Setup(x => x.Send(It.IsAny<GetUserById.Query>(), CancellationToken.None))
             .ReturnsAsync(new ApplicationUser
             {
                 Id = Guid.NewGuid(),

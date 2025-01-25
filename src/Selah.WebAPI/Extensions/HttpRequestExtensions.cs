@@ -8,7 +8,7 @@ namespace Selah.WebAPI.Extensions;
 [ExcludeFromCodeCoverage]
 public static class HttpRequestExtensions
 {
-    public static AppRequestContext? GetAppRequestContext(this HttpRequest request)
+    public static AppRequestContext GetAppRequestContext(this HttpRequest request)
     {
         string? forwardedFor = request.Headers["X-Forwarded-For"].FirstOrDefault();
         string? ipAddress = !string.IsNullOrWhiteSpace(forwardedFor)
@@ -26,7 +26,10 @@ public static class HttpRequestExtensions
         
         if (string.IsNullOrWhiteSpace(bearerToken))
         {
-            return null; // No token found
+            return new AppRequestContext
+            {
+                UserId = Guid.Empty,
+            };
         }
         
         Guid userId = GetUserIdFromToken(bearerToken);

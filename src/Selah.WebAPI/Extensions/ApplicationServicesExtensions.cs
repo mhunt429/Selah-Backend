@@ -1,7 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using HashidsNet;
-using Selah.Application.Services;
-using Selah.Application.Services.Interfaces;
 using Selah.Infrastructure;
 using Selah.Infrastructure.Services;
 using Selah.Infrastructure.Services.Interfaces;
@@ -17,7 +14,6 @@ public static class ApplicationServicesExtensions
             .AddScoped<ITokenService, TokenService>()
             .AddScoped<IPasswordHasherService, PasswordHasherService>()
             .AddScoped<ICryptoService, CryptoService>()
-            .AddScoped<IAccountConnectorHttpService, AccountConnectorHttpService>()
             ;
 
         return services;
