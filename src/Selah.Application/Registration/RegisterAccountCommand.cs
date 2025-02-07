@@ -44,7 +44,7 @@ public class RegisterAccount
 
             await _registrationRepository.RegisterAccount(userAccountSql, applicationUserSql);
 
-            AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId.ToString());
+            AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId);
 
             _logger.LogInformation("User with id {id} was successfully created", userId);
             return accessTokenResponse;

@@ -4,5 +4,5 @@ namespace Selah.Infrastructure.Services.Interfaces;
 
 public interface ITokenService
 {
-   AccessTokenResponse GenerateAccessToken(string userId);
+   AccessTokenResponse GenerateAccessToken(Guid userId);
 }

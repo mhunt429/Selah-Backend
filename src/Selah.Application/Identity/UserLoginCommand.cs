@@ -50,7 +50,7 @@ public class UserLogin
             {
                 var response = new Response
                 {
-                    Data = _tokenService.GenerateAccessToken(dbUser.Id.ToString())
+                    Data = _tokenService.GenerateAccessToken(dbUser.Id)
                 };
                 return response;
             }

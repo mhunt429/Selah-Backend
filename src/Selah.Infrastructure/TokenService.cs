@@ -18,7 +18,7 @@ public class TokenService : ITokenService
         _securityConfig = securityConfig;
     }
 
-    public AccessTokenResponse GenerateAccessToken(string userId)
+    public AccessTokenResponse GenerateAccessToken(Guid userId)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         byte[] key = Encoding.UTF8.GetBytes(_securityConfig.JwtSecret);
@@ -29,7 +29,7 @@ public class TokenService : ITokenService
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim("sub", userId)
+                new Claim("sub", userId.ToString()),
             }),
             Expires = accessTokenExpiration,
             Issuer = "selah-api",
