@@ -14,18 +14,16 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
 
     public AccountConnectorRepositoryTests()
     {
-        _accountConnectorRepository = new AccountConnectorRepository(_baseRepository);
+        _accountConnectorRepository = new AccountConnectorRepository(TestHelpers.BuildTestDbContext());
     }
 
     [Fact]
     public async Task InsertAccountConnectorRecord_ShouldSaveRecord()
     {
-        AccountConnectorInsert data = new AccountConnectorInsert
+        AccountConnectorSql data = new AccountConnectorSql
         {
             AppLastChangedBy = _userId,
             UserId = _userId,
-            OriginalInsert = DateTimeOffset.UtcNow,
-            LastUpdate = DateTimeOffset.UtcNow,
             InstitutionId = "123",
             InstitutionName = "Morgan Stanley",
             DateConnected = DateTimeOffset.UtcNow,
@@ -48,7 +46,7 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var registrationRepository = new RegistrationRepository(_baseRepository);
+        var registrationRepository = new RegistrationRepository(TestHelpers.BuildTestDbContext());
         await TestHelpers.SetUpBaseRecords(_userId, _accountId, registrationRepository);
     }
 

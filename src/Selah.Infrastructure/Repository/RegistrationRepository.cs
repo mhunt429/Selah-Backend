@@ -1,57 +1,37 @@
-using Selah.Core.Constants;
-using Selah.Core.Models.Sql.Registration;
+using Selah.Core.Models.Sql.ApplicationUser;
+using Selah.Core.Models.Sql.UserAccount;
 
 namespace Selah.Infrastructure.Repository;
 
 public class RegistrationRepository : IRegistrationRepository
 {
-    private readonly IBaseRepository _baseRepository;
+    private readonly AppDbContext _dbContext;
 
-    public RegistrationRepository(IBaseRepository baseRepository)
+    public RegistrationRepository(AppDbContext dbContext)
     {
-        _baseRepository = baseRepository;
+        _dbContext = dbContext;
     }
 
-    public async Task<Guid> RegisterAccount(RegistrationSql registrationSql)
+    public async Task<Guid> RegisterAccount(UserAccountSql userAccount, ApplicationUserSql user)
     {
-
-        (string, object) account = (SqlQueries.InsertIntoAccount,
-            new
-            {
-                original_insert = DateTimeOffset.UtcNow,
-                last_update = DateTimeOffset.UtcNow,
-                id = registrationSql.AccountId,
-                app_last_changed_by = registrationSql.UserId,
-                date_created = DateTimeOffset.UtcNow,
-                account_name = registrationSql.AccountName
-            });
-
-        (string, object) user = (SqlQueries.InsertIntoAppUser, new
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
         {
-            app_last_changed_by = registrationSql.UserId,
-            original_insert = DateTimeOffset.UtcNow,
-            last_update = DateTimeOffset.UtcNow,
-            id = registrationSql.UserId,
-            account_id = registrationSql.AccountId,
-            created_date = registrationSql.CreatedDate,
-            encrypted_email = registrationSql.EncryptedEmail,
-            username = registrationSql.Username,
-            password = registrationSql.Password,
-            encrypted_name = registrationSql.EncryptedName,
-            encrypted_phone = registrationSql.EncryptedPhone,
-            last_login = registrationSql.LastLogin,
-            last_login_ip = registrationSql.LastLoginIp,
-            phone_verified = registrationSql.PhoneVerified,
-            email_verified = registrationSql.EmailVerified,
-            email_hash = registrationSql.EmailHash,
-        });
+            try
+            {
+                _dbContext.UserAccounts.Add(userAccount);
+                await _dbContext.SaveChangesAsync();
 
-        List<(string, object)> dbTransactions = new List<(string, object)>();
+                _dbContext.ApplicationUsers.Add(user);
+                await _dbContext.SaveChangesAsync();
 
-        dbTransactions.Add(account);
-        dbTransactions.Add(user);
-        await _baseRepository.PerformTransaction(dbTransactions);
-
-        return registrationSql.UserId;
+                await transaction.CommitAsync();
+                return userAccount.Id;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
     }
 }

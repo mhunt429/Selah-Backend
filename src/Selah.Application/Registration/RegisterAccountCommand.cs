@@ -2,7 +2,8 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
-using Selah.Core.Models.Sql.Registration;
+using Selah.Core.Models.Sql.ApplicationUser;
+using Selah.Core.Models.Sql.UserAccount;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -12,7 +13,6 @@ public class RegisterAccount
 {
     public class Command : AccountRegistrationRequest, IRequest<AccessTokenResponse>
     {
-       
     }
 
     public class Handler : IRequestHandler<Command, AccessTokenResponse>
@@ -35,7 +35,14 @@ public class RegisterAccount
 
         public async Task<AccessTokenResponse> Handle(Command command, CancellationToken cancellationToken)
         {
-            Guid userId = await _registrationRepository.RegisterAccount(MapRequestToSql(command));
+            //Since this is the entry point of the account creation, initialize 2 unique ids for the account and user
+            Guid accountId = Guid.CreateVersion7();
+            Guid userId = Guid.CreateVersion7();
+
+            UserAccountSql userAccountSql = MapRequestToUserAccount(command, accountId, userId);
+            ApplicationUserSql applicationUserSql = MapRequestToUser(command, accountId, userId);
+
+            await _registrationRepository.RegisterAccount(userAccountSql, applicationUserSql);
 
             AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId.ToString());
 
@@ -43,12 +50,24 @@ public class RegisterAccount
             return accessTokenResponse;
         }
 
-        private RegistrationSql MapRequestToSql(AccountRegistrationRequest request)
+        private UserAccountSql MapRequestToUserAccount(AccountRegistrationRequest request, Guid accountId, Guid userId)
         {
-            return new RegistrationSql
+            return new UserAccountSql
             {
+                AppLastChangedBy = userId,
+                Id = accountId,
+                CreatedOn = DateTime.UtcNow,
+                AccountName = request.AccountName,
+            };
+        }
+
+        private ApplicationUserSql MapRequestToUser(AccountRegistrationRequest request, Guid accountId, Guid userId)
+        {
+            return new ApplicationUserSql
+            {
+                AppLastChangedBy = userId,
                 AccountId = Guid.NewGuid(),
-                UserId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Username = request.Username,
                 Password = _passwordHasherService.HashPassword(request.Password),
                 EncryptedEmail = _cryptoService.Encrypt(request.Email),
@@ -56,7 +75,6 @@ public class RegisterAccount
                 EncryptedPhone = _cryptoService.Encrypt(request.PhoneNumber),
                 PhoneVerified = false,
                 EmailVerified = false,
-                AccountName = request.AccountName,
                 EmailHash = _cryptoService.HashValue(request.Email),
             };
         }

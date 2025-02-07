@@ -1,4 +1,5 @@
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Selah.Core.Constants;
 using Selah.Core.Models.Sql.FinancialAccount;
 using Selah.Infrastructure.Extensions;
@@ -7,46 +8,45 @@ namespace Selah.Infrastructure.Repository;
 
 public class FinancialAccountRepository : IFinancialAccountRepository
 {
-    private readonly IBaseRepository _baseRepository;
+    private readonly AppDbContext _dbContext;
 
-    public FinancialAccountRepository(IBaseRepository baseRepository)
+    public FinancialAccountRepository(AppDbContext dbContext)
     {
-        _baseRepository = baseRepository;
+        _dbContext = dbContext;
     }
 
-    public async Task ImportFinancialAccountsAsync(IEnumerable<FinancialAccountSqlInsert> accounts)
+    public async Task ImportFinancialAccountsAsync(IEnumerable<FinancialAccountSql> accounts)
     {
-        IEnumerable<DynamicParameters> parameters = accounts.Select(account => account.ConvertToSnakecase());
-
-        await _baseRepository.PerformTransaction(parameters, SqlQueries.InsertIntoFinancialAccount);
+        await _dbContext.FinancialAccounts.AddRangeAsync(accounts);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<long> AddAccountAsync(FinancialAccountSqlInsert account)
+    public async Task<long> AddAccountAsync(FinancialAccountSql account)
     {
-        return await _baseRepository.AddAsync<long>(SqlQueries.InsertIntoFinancialAccount,
-            account.ConvertToSnakecase());
+        await _dbContext.FinancialAccounts.AddAsync(account);
+        await _dbContext.SaveChangesAsync();
+        return account.Id;
     }
 
-    public async Task<IEnumerable<FinancialAccountSql>> GetAccountsAsync(Guid userId)
+    public async Task<IEnumerable<FinancialAccountSql?>> GetAccountsAsync(Guid userId)
     {
-        return await _baseRepository.GetAllAsync<FinancialAccountSql>(SqlQueries.GetFinancialAccountsByUserId,
-            new { user_id = userId });
+        return await _dbContext.FinancialAccounts.Where(x => x.UserId == userId).ToListAsync();
     }
 
-    public async Task<FinancialAccountSql> GetAccountByIdAsync(Guid userId, long id)
+    public async Task<FinancialAccountSql?> GetAccountByIdAsync(Guid userId, long id)
     {
-        return await _baseRepository.GetFirstOrDefaultAsync<FinancialAccountSql>(SqlQueries.GetFinancialAccountsById,
-            new { id = id, user_id = userId });
+        return await _dbContext.FinancialAccounts.Where(x => x.UserId == userId && x.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<bool> UpdateAccountBalance(FinancialAccountBalanceUpdate accountBalanceUpdate)
+    public async Task<bool> UpdateAccount(FinancialAccountSql account)
     {
-        return await _baseRepository.UpdateAsync(SqlQueries.UpdateAccountBalance,
-            accountBalanceUpdate.ConvertToSnakecase());
+        _dbContext.FinancialAccounts.Update(account);
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteAccountAsync(Guid userId, long id)
+    public async Task<bool> DeleteAccountAsync(FinancialAccountSql account)
     {
-        return await _baseRepository.DeleteAsync(SqlQueries.DeleteFinancialAccount, new { id = id, user_id = userId });
+        _dbContext.Remove(account);
+        return await _dbContext.SaveChangesAsync() > 0;
     }
 }

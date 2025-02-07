@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Selah.Core.Models.Sql.ApplicationUser;
 
-public class ApplicationUserSql
+public class ApplicationUserSql: BaseAuditFields
 {
+    [Key]
     public Guid Id { get; set; }
 
     public Guid AccountId { get; set; }

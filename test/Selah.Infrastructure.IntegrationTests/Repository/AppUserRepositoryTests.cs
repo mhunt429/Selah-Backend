@@ -36,7 +36,7 @@ public class AppUserRepositoryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var registrationRepository = new RegistrationRepository(_baseRepository);
+        var registrationRepository = new RegistrationRepository(TestHelpers.BuildTestDbContext());
         await TestHelpers.SetUpBaseRecords(_userId, _accountId, registrationRepository);
     }
 

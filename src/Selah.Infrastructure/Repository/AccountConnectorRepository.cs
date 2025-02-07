@@ -7,21 +7,21 @@ namespace Selah.Infrastructure.Repository;
 
 public class AccountConnectorRepository: IAccountConnectorRepository
 {
-    private readonly IBaseRepository _baseRepository;
+    private readonly AppDbContext _dbContext;
 
-    public AccountConnectorRepository(IBaseRepository baseRepository)
+    public AccountConnectorRepository(AppDbContext dbContext)
     {
-        _baseRepository = baseRepository;
+        _dbContext = dbContext;
     }
 
 
     /// <summary>
     /// Insert into account_connector upon successful connection through Plaid or Finicity
     /// </summary>
-    public async Task<long> InsertAccountConnectorRecord(AccountConnectorInsert accountConnectorInsert)
+    public async Task<long> InsertAccountConnectorRecord(AccountConnectorSql account)
     {
-        DynamicParameters dataToSave = accountConnectorInsert.ConvertToSnakecase();
-
-       return await _baseRepository.AddAsync<long>(SqlQueries.InsertIntoAccountConnector, dataToSave);
+       await _dbContext.AccountConnectors.AddAsync(account);
+       await _dbContext.SaveChangesAsync();
+       return account.Id;
     }
 }

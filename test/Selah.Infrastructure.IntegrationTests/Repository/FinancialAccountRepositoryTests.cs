@@ -19,16 +19,16 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
 
     public FinancialAccountRepositoryTests()
     {
-        _financialAccountRepository = new FinancialAccountRepository(_baseRepository);
-        _accountConnectorRepository = new AccountConnectorRepository(_baseRepository);
+        _financialAccountRepository = new FinancialAccountRepository(TestHelpers.BuildTestDbContext());
+        _accountConnectorRepository = new AccountConnectorRepository(TestHelpers.BuildTestDbContext());
     }
 
     [Fact]
     public async Task ImportFinancialAccountsAsync_ShouldInsertMultipleAccounts()
     {
-        var data = new List<FinancialAccountSqlInsert>
+        var data = new List<FinancialAccountSql>
         {
-            new FinancialAccountSqlInsert
+            new FinancialAccountSql
             {
                 AppLastChangedBy = _userId,
                 UserId = _userId,
@@ -42,7 +42,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
                 LastApiImportTime = DateTimeOffset.UtcNow,
                 ConnectorId = _connectorId,
             },
-            new FinancialAccountSqlInsert
+            new FinancialAccountSql
             {
                 AppLastChangedBy = _userId,
                 UserId = _userId,
@@ -69,7 +69,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task AddAccountAsync_ShouldInsertNewAccount()
     {
-        var account = new FinancialAccountSqlInsert
+        var account = new FinancialAccountSql
         {
             AppLastChangedBy = _userId,
             UserId = _userId,
@@ -103,7 +103,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task UpdateAccountAsync_ShouldUpdateAccount()
     {
-        var account = new FinancialAccountSqlInsert
+        var account = new FinancialAccountSql
         {
             AppLastChangedBy = _userId,
             UserId = _userId,
@@ -120,14 +120,17 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
 
         long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
 
-        var accountUpdate = new FinancialAccountBalanceUpdate
+        var accountUpdate = new FinancialAccountSql
         {
             Id = newAccountId,
             UserId = _userId,
-            CurrentBalance = 1000
+            CurrentBalance = 1000,
+            DisplayName = "Vanguard Trust 401k",
+            Subtype = "Retirement",
+            AppLastChangedBy = _userId,
         };
 
-        await _financialAccountRepository.UpdateAccountBalance(accountUpdate);
+        await _financialAccountRepository.UpdateAccount(accountUpdate);
         var result = await _financialAccountRepository.GetAccountByIdAsync(_userId, newAccountId);
         result.Should().NotBeNull();
         result.CurrentBalance.Should().Be(1000);
@@ -136,7 +139,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task DeleteAccountAsync_ShouldDeleteAccount()
     {
-        var account = new FinancialAccountSqlInsert
+        var account = new FinancialAccountSql
         {
             AppLastChangedBy = _userId,
             UserId = _userId,
@@ -153,7 +156,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
 
         long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
        
-        var deleteResult = await _financialAccountRepository.DeleteAccountAsync(_userId, newAccountId);
+        var deleteResult = await _financialAccountRepository.DeleteAccountAsync(account);
         deleteResult.Should().BeTrue();
         
         var result = await _financialAccountRepository.GetAccountByIdAsync(_userId, newAccountId);
@@ -162,15 +165,13 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var registrationRepository = new RegistrationRepository(_baseRepository);
+        var registrationRepository = new RegistrationRepository(TestHelpers.BuildTestDbContext());
         await TestHelpers.SetUpBaseRecords(_userId, _accountId, registrationRepository);
 
-        AccountConnectorInsert data = new AccountConnectorInsert
+        AccountConnectorSql data = new AccountConnectorSql
         {
             AppLastChangedBy = _userId,
             UserId = _userId,
-            OriginalInsert = DateTimeOffset.UtcNow,
-            LastUpdate = DateTimeOffset.UtcNow,
             InstitutionId = "123",
             InstitutionName = "Morgan Stanley",
             DateConnected = DateTimeOffset.UtcNow,

@@ -4,15 +4,15 @@ namespace Selah.Infrastructure.Repository;
 
 public interface IFinancialAccountRepository
 {
-    Task ImportFinancialAccountsAsync(IEnumerable<FinancialAccountSqlInsert> accounts);
+    Task ImportFinancialAccountsAsync(IEnumerable<FinancialAccountSql> accounts);
 
-    Task<long> AddAccountAsync(FinancialAccountSqlInsert account);
+    Task<long> AddAccountAsync(FinancialAccountSql account);
 
-    Task<IEnumerable<FinancialAccountSql>> GetAccountsAsync(Guid userId);
+    Task<IEnumerable<FinancialAccountSql?>> GetAccountsAsync(Guid userId);
 
-    Task<FinancialAccountSql> GetAccountByIdAsync(Guid userId, long id);
+    Task<FinancialAccountSql?> GetAccountByIdAsync(Guid userId, long id);
 
-    Task<bool> UpdateAccountBalance(FinancialAccountBalanceUpdate accountBalanceUpdate);
+    Task<bool> UpdateAccount(FinancialAccountSql account);
 
-    Task<bool> DeleteAccountAsync(Guid userId, long id);
+    Task<bool> DeleteAccountAsync(FinancialAccountSql account);
 }

@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Selah.Core.Models.Sql.Registration;
 using Selah.Infrastructure.Repository;
 
 namespace Selah.Infrastructure.IntegrationTests.Repository;
@@ -15,28 +14,17 @@ public class RegistrationRepositoryTests : IAsyncLifetime
 
     public RegistrationRepositoryTests()
     {
-        _repository = new RegistrationRepository(_baseRepository);
+        _repository = new RegistrationRepository(TestHelpers.BuildTestDbContext());
     }
 
     [Fact]
     public async Task Register_ShouldSaveAccountAndUserRecord()
     {
-        RegistrationSql registrationSql = new RegistrationSql
-        {
-            AccountId = accountId,
-            UserId = userId,
-            EncryptedEmail = "email",
-            Username = Guid.NewGuid().ToString().Substring(0, 19),
-            Password = "password",
-            EncryptedName = "FirstName|LastName",
-            EncryptedPhone = "123-123-1234",
-            LastLoginIp = "127.0.0.1",
-            AccountName = "AccountName",
-        };
+       
 
-        userId = await _repository.RegisterAccount(registrationSql);
-
-        userId.Should().NotBe(Guid.Empty);
+       var result = await TestHelpers.SetUpBaseRecords(accountId, userId, _repository);
+       result.Should().NotBeNull();
+       result.Item2.Id.Should().Be(userId);
     }
 
     public async Task InitializeAsync()

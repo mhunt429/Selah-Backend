@@ -39,10 +39,8 @@ public class ExchangeLinkToken
             }
             //If we get a token back from Plaid, save the record into the account_connector table
 
-            AccountConnectorInsert dataToSave = new AccountConnectorInsert
+            AccountConnectorSql dataToSave = new AccountConnectorSql
             {
-                OriginalInsert = DateTime.UtcNow,
-                LastUpdate = DateTime.UtcNow,
                 AppLastChangedBy = request.UserId,
                 UserId = request.UserId,
                 InstitutionId = request.InstitutionId,

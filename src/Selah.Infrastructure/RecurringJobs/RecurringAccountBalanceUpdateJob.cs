@@ -4,7 +4,7 @@ using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Infrastructure.RecurringJobs;
 
-[AutomaticRetryAttribute(Attempts = 0)]
+[AutomaticRetry(Attempts = 0)]
 public class RecurringAccountBalanceUpdateJob
 {
     private readonly ILogger<RecurringAccountBalanceUpdateJob> _logger;
