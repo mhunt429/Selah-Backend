@@ -56,7 +56,7 @@ public class RegisterAccount
             {
                 AppLastChangedBy = userId,
                 Id = accountId,
-                CreatedOn = DateTime.UtcNow,
+                CreatedOn = DateTimeOffset.UtcNow,
                 AccountName = request.AccountName,
             };
         }

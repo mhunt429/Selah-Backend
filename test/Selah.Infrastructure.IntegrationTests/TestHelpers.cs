@@ -33,7 +33,7 @@ public static class TestHelpers
         {
             Id = accountId,
             AccountName = "AccountName",
-            CreatedOn = DateTime.Now,
+            CreatedOn = DateTimeOffset.UtcNow,
             AppLastChangedBy = userId
         };
 

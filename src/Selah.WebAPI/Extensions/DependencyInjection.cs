@@ -17,7 +17,7 @@ public static class DependencyInjection
 {
     public static void AddDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-        services.RegisterRepositories()
+        services.RegisterRepositories(configuration)
             .AddValidators()
             .AddApplicationServices()
             .AddHttpClients(configuration)
