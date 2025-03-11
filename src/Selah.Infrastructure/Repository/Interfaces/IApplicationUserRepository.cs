@@ -1,10 +1,10 @@
-using Selah.Core.Models.Sql.ApplicationUser;
+using Selah.Core.Models.Entities.ApplicationUser;
 
 namespace Selah.Infrastructure.Repository;
 
 public interface IApplicationUserRepository
 {
-    Task<ApplicationUserSql?> GetUserByIdAsync(Guid userId);
+    Task<ApplicationUserEntity?> GetUserByIdAsync(Guid userId);
 
-    Task<ApplicationUserSql?> GetUserByEmail( string encryptedEmail);
+    Task<ApplicationUserEntity?> GetUserByEmail( string encryptedEmail);
 }

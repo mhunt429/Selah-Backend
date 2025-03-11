@@ -1,5 +1,5 @@
 using Selah.Core.Constants;
-using Selah.Core.Models.Sql.ApplicationUser;
+using Selah.Core.Models.Entities.ApplicationUser;
 
 namespace Selah.Infrastructure.Repository;
 
@@ -12,14 +12,14 @@ public class AppUserRepository : IApplicationUserRepository
         _baseRepository = baseRepository;
     }
 
-    public async Task<ApplicationUserSql?> GetUserByIdAsync(Guid id)
+    public async Task<ApplicationUserEntity?> GetUserByIdAsync(Guid id)
     {
-        return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserSql>(SqlQueries.GetUserById, new { id });
+        return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserEntity>(SqlQueries.GetUserById, new { id });
     }
 
-    public async Task<ApplicationUserSql> GetUserByEmail(string emailHash)
+    public async Task<ApplicationUserEntity> GetUserByEmail(string emailHash)
     {
-        return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserSql>(SqlQueries.GetUserByEmail,
+        return await _baseRepository.GetFirstOrDefaultAsync<ApplicationUserEntity>(SqlQueries.GetUserByEmail,
             new { email_hash = emailHash });
     }
 }

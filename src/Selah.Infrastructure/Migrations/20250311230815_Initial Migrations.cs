@@ -7,13 +7,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Selah.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "account_connectors",
+                name: "account_connector",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
@@ -31,11 +31,11 @@ namespace Selah.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_account_connectors", x => x.id);
+                    table.PrimaryKey("PK_account_connector", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "application_users",
+                name: "app_user",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -46,7 +46,7 @@ namespace Selah.Infrastructure.Migrations
                     password = table.Column<string>(type: "text", nullable: false),
                     encrypted_name = table.Column<string>(type: "text", nullable: false),
                     encrypted_phone = table.Column<string>(type: "text", nullable: false),
-                    last_login = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    last_login_date = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     last_login_ip = table.Column<string>(type: "text", nullable: false),
                     phone_verified = table.Column<bool>(type: "boolean", nullable: false),
                     email_verified = table.Column<bool>(type: "boolean", nullable: false),
@@ -57,11 +57,11 @@ namespace Selah.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_application_users", x => x.id);
+                    table.PrimaryKey("PK_app_user", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "financial_accounts",
+                name: "financial_account",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
@@ -75,30 +75,30 @@ namespace Selah.Infrastructure.Migrations
                     official_name = table.Column<string>(type: "text", nullable: false),
                     subtype = table.Column<string>(type: "text", nullable: false),
                     is_external_api_import = table.Column<bool>(type: "boolean", nullable: false),
-                    last_api_import_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    last_api_sync_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     original_insert = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     last_update = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     app_last_changed_by = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_financial_accounts", x => x.id);
+                    table.PrimaryKey("PK_financial_account", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_accounts",
+                name: "user_account",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_on = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    account_name = table.Column<string>(type: "text", nullable: false),
+                    account_name = table.Column<string>(type: "text", nullable: true),
                     original_insert = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     last_update = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     app_last_changed_by = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_accounts", x => x.id);
+                    table.PrimaryKey("PK_user_account", x => x.id);
                 });
         }
 
@@ -106,16 +106,16 @@ namespace Selah.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "account_connectors");
+                name: "account_connector");
 
             migrationBuilder.DropTable(
-                name: "application_users");
+                name: "app_user");
 
             migrationBuilder.DropTable(
-                name: "financial_accounts");
+                name: "financial_account");
 
             migrationBuilder.DropTable(
-                name: "user_accounts");
+                name: "user_account");
         }
     }
 }

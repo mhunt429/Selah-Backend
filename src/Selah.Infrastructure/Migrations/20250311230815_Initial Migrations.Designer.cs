@@ -12,8 +12,8 @@ using Selah.Infrastructure;
 namespace Selah.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250207050158_Init")]
-    partial class Init
+    [Migration("20250311230815_Initial Migrations")]
+    partial class InitialMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace Selah.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Selah.Core.Models.Sql.AccountConnector.AccountConnectorSql", b =>
+            modelBuilder.Entity("Selah.Core.Models.Entities.AccountConnector.AccountConnectorEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,13 +80,12 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id")
-                        .HasName("pk_account_connectors");
+                    b.HasKey("Id");
 
-                    b.ToTable("account_connectors");
+                    b.ToTable("account_connector");
                 });
 
-            modelBuilder.Entity("Selah.Core.Models.Sql.ApplicationUser.ApplicationUserSql", b =>
+            modelBuilder.Entity("Selah.Core.Models.Entities.ApplicationUser.ApplicationUserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,9 +128,9 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("encrypted_phone");
 
-                    b.Property<DateTimeOffset>("LastLogin")
+                    b.Property<DateTimeOffset?>("LastLoginDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_login");
+                        .HasColumnName("last_login_date");
 
                     b.Property<string>("LastLoginIp")
                         .IsRequired()
@@ -160,13 +159,12 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("username");
 
-                    b.HasKey("Id")
-                        .HasName("pk_application_users");
+                    b.HasKey("Id");
 
-                    b.ToTable("application_users");
+                    b.ToTable("app_user");
                 });
 
-            modelBuilder.Entity("Selah.Core.Models.Sql.FinancialAccount.FinancialAccountSql", b =>
+            modelBuilder.Entity("Selah.Core.Models.Entities.FinancialAccount.FinancialAccountEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -207,9 +205,9 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_external_api_import");
 
-                    b.Property<DateTimeOffset>("LastApiImportTime")
+                    b.Property<DateTimeOffset>("LastApiSyncTime")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_api_import_time");
+                        .HasColumnName("last_api_sync_time");
 
                     b.Property<DateTimeOffset>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
@@ -233,13 +231,12 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id")
-                        .HasName("pk_financial_accounts");
+                    b.HasKey("Id");
 
-                    b.ToTable("financial_accounts");
+                    b.ToTable("financial_account");
                 });
 
-            modelBuilder.Entity("Selah.Core.Models.Sql.UserAccount.UserAccountSql", b =>
+            modelBuilder.Entity("Selah.Core.Models.Entities.UserAccount.UserAccountEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -247,7 +244,6 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("AccountName")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("account_name");
 
@@ -267,10 +263,9 @@ namespace Selah.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("original_insert");
 
-                    b.HasKey("Id")
-                        .HasName("pk_user_accounts");
+                    b.HasKey("Id");
 
-                    b.ToTable("user_accounts");
+                    b.ToTable("user_account");
                 });
 #pragma warning restore 612, 618
         }

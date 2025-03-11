@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Selah.Application.Registration;
 using Selah.Core.ApiContracts.Identity;
-using Selah.Core.Models.Sql.ApplicationUser;
-using Selah.Core.Models.Sql.UserAccount;
+using Selah.Core.Models.Entities.ApplicationUser;
+using Selah.Core.Models.Entities.UserAccount;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -26,7 +26,7 @@ public class CreateAccountCommandUnitTests
     public CreateAccountCommandUnitTests()
     {
         _registrationRepository
-            .Setup(x => x.RegisterAccount(It.IsAny<UserAccountSql>(), It.IsAny<ApplicationUserSql>()))
+            .Setup(x => x.RegisterAccount(It.IsAny<UserAccountEntity>(), It.IsAny<ApplicationUserEntity>()))
             .ReturnsAsync(_userId);
 
         _handler = new RegisterAccount.Handler(_registrationRepository.Object, _cryptoService.Object,

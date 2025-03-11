@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Selah.Core.Models.Sql.AccountConnector;
+using Selah.Core.Models.Entities.AccountConnector;
 using Selah.Infrastructure.Repository;
 
 namespace Selah.Infrastructure.IntegrationTests.Repository;
@@ -20,7 +20,7 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task InsertAccountConnectorRecord_ShouldSaveRecord()
     {
-        AccountConnectorSql data = new AccountConnectorSql
+        AccountConnectorEntity data = new AccountConnectorEntity
         {
             AppLastChangedBy = _userId,
             UserId = _userId,
@@ -33,7 +33,7 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
         await _accountConnectorRepository.InsertAccountConnectorRecord(data);
 
         var queryResult =
-            await _baseRepository.GetFirstOrDefaultAsync<AccountConnectorSql>(
+            await _baseRepository.GetFirstOrDefaultAsync<AccountConnectorEntity>(
                 "SELECT * FROM account_connector WHERE user_id = @user_id", new { user_id = _userId });
 
         queryResult.Should().NotBeNull();

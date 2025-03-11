@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
-using Selah.Core.Models.Sql.ApplicationUser;
-using Selah.Core.Models.Sql.UserAccount;
+using Selah.Core.Models.Entities.ApplicationUser;
+using Selah.Core.Models.Entities.UserAccount;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -39,10 +39,10 @@ public class RegisterAccount
             Guid accountId = Guid.CreateVersion7();
             Guid userId = Guid.CreateVersion7();
 
-            UserAccountSql userAccountSql = MapRequestToUserAccount(command, accountId, userId);
-            ApplicationUserSql applicationUserSql = MapRequestToUser(command, accountId, userId);
+            UserAccountEntity userAccountEntity = MapRequestToUserAccount(command, accountId, userId);
+            ApplicationUserEntity applicationUserEntity = MapRequestToUser(command, accountId, userId);
 
-            await _registrationRepository.RegisterAccount(userAccountSql, applicationUserSql);
+            await _registrationRepository.RegisterAccount(userAccountEntity, applicationUserEntity);
 
             AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId);
 
@@ -50,9 +50,9 @@ public class RegisterAccount
             return accessTokenResponse;
         }
 
-        private UserAccountSql MapRequestToUserAccount(AccountRegistrationRequest request, Guid accountId, Guid userId)
+        private UserAccountEntity MapRequestToUserAccount(AccountRegistrationRequest request, Guid accountId, Guid userId)
         {
-            return new UserAccountSql
+            return new UserAccountEntity
             {
                 AppLastChangedBy = userId,
                 Id = accountId,
@@ -61,9 +61,9 @@ public class RegisterAccount
             };
         }
 
-        private ApplicationUserSql MapRequestToUser(AccountRegistrationRequest request, Guid accountId, Guid userId)
+        private ApplicationUserEntity MapRequestToUser(AccountRegistrationRequest request, Guid accountId, Guid userId)
         {
-            return new ApplicationUserSql
+            return new ApplicationUserEntity
             {
                 AppLastChangedBy = userId,
                 AccountId = Guid.NewGuid(),

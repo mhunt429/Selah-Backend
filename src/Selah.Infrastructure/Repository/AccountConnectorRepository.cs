@@ -1,6 +1,6 @@
 using Dapper;
 using Selah.Core.Constants;
-using Selah.Core.Models.Sql.AccountConnector;
+using Selah.Core.Models.Entities.AccountConnector;
 using Selah.Infrastructure.Extensions;
 
 namespace Selah.Infrastructure.Repository;
@@ -18,7 +18,7 @@ public class AccountConnectorRepository: IAccountConnectorRepository
     /// <summary>
     /// Insert into account_connector upon successful connection through Plaid or Finicity
     /// </summary>
-    public async Task<long> InsertAccountConnectorRecord(AccountConnectorSql account)
+    public async Task<long> InsertAccountConnectorRecord(AccountConnectorEntity account)
     {
        await _dbContext.AccountConnectors.AddAsync(account);
        await _dbContext.SaveChangesAsync();

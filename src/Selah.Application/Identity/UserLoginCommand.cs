@@ -1,6 +1,6 @@
 using MediatR;
 using Selah.Core.ApiContracts.Identity;
-using Selah.Core.Models.Sql.ApplicationUser;
+using Selah.Core.Models.Entities.ApplicationUser;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -42,7 +42,7 @@ public class UserLogin
             var loginRequest = command.LoginRequest;
 
             string hashedEmail = _cryptoService.HashValue(loginRequest.Email);
-            ApplicationUserSql? dbUser = await _repository.GetUserByEmail(hashedEmail);
+            ApplicationUserEntity? dbUser = await _repository.GetUserByEmail(hashedEmail);
 
             if (dbUser == null) return null;
 

@@ -1,8 +1,8 @@
-using Selah.Core.Models.Sql.AccountConnector;
+using Selah.Core.Models.Entities.AccountConnector;
 
 namespace Selah.Infrastructure.Repository;
 
 public interface IAccountConnectorRepository
 {
-    Task<long> InsertAccountConnectorRecord(AccountConnectorSql account);
+    Task<long> InsertAccountConnectorRecord(AccountConnectorEntity account);
 }

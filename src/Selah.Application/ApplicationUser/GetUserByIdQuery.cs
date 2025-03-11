@@ -1,6 +1,6 @@
 using MediatR;
 using Selah.Application.Mappings;
-using Selah.Core.Models.Sql.ApplicationUser;
+using Selah.Core.Models.Entities.ApplicationUser;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -26,7 +26,7 @@ public class GetUserById
 
         public async Task<Core.ApiContracts.ApplicationUser> Handle(Query query, CancellationToken cancellationToken)
         {
-            ApplicationUserSql? userSql = await _repository.GetUserByIdAsync(query.UserId);
+            ApplicationUserEntity? userSql = await _repository.GetUserByIdAsync(query.UserId);
             if (userSql == null) return null!;
            
             return userSql.MapAppUserDataAccessToApiContract(_cryptoService);

@@ -1,6 +1,6 @@
 using MediatR;
+using Selah.Core.Models.Entities.AccountConnector;
 using Selah.Core.Models.Plaid;
-using Selah.Core.Models.Sql.AccountConnector;
 using Selah.Infrastructure.Repository;
 using Selah.Infrastructure.Services.Interfaces;
 
@@ -39,7 +39,7 @@ public class ExchangeLinkToken
             }
             //If we get a token back from Plaid, save the record into the account_connector table
 
-            AccountConnectorSql dataToSave = new AccountConnectorSql
+            AccountConnectorEntity dataToSave = new AccountConnectorEntity
             {
                 AppLastChangedBy = request.UserId,
                 UserId = request.UserId,

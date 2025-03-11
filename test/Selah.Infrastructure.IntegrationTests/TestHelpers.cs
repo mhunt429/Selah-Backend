@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Selah.Core.Models.Sql.ApplicationUser;
-using Selah.Core.Models.Sql.UserAccount;
+using Selah.Core.Models.Entities.ApplicationUser;
+using Selah.Core.Models.Entities.UserAccount;
 using Selah.Infrastructure.Repository;
 
 namespace Selah.Infrastructure.IntegrationTests;
@@ -27,9 +27,9 @@ public static class TestHelpers
     /// <param name="userId"></param>
     /// <param name="accountId"></param>
     /// <param name="repository"></param>
-    public static async Task<(UserAccountSql, ApplicationUserSql)> SetUpBaseRecords(Guid userId, Guid accountId, IRegistrationRepository repository)
+    public static async Task<(UserAccountEntity, ApplicationUserEntity)> SetUpBaseRecords(Guid accountId, Guid userId, IRegistrationRepository repository)
     {
-        UserAccountSql account = new UserAccountSql
+        UserAccountEntity account = new UserAccountEntity
         {
             Id = accountId,
             AccountName = "AccountName",
@@ -37,7 +37,7 @@ public static class TestHelpers
             AppLastChangedBy = userId
         };
 
-        ApplicationUserSql user = new ApplicationUserSql
+        ApplicationUserEntity user = new ApplicationUserEntity
         {
             AppLastChangedBy = userId,
             AccountId = accountId,
@@ -48,6 +48,7 @@ public static class TestHelpers
             EncryptedName = "FirstName|LastName",
             EncryptedPhone = "123-123-1234",
             LastLoginIp = "127.0.0.1",
+            EmailHash = "email",
         };
         
        
@@ -59,7 +60,7 @@ public static class TestHelpers
     public static async Task TearDownBaseRecords(Guid userId, Guid accountId, IBaseRepository repository)
     {
         string deleteUserSql = "DELETE FROM app_user WHERE id = @id";
-        string deleteAccountUser = "DELETE FROM account WHERE id = @id";
+        string deleteAccountUser = "DELETE FROM user_account WHERE id = @id";
 
         await repository.DeleteAsync(deleteUserSql, new { id = userId });
         await repository.DeleteAsync(deleteAccountUser, new { id = accountId });

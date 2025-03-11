@@ -9,8 +9,9 @@ public class RegistrationRepositoryTests : IAsyncLifetime
 
     private readonly RegistrationRepository _repository;
 
-    private readonly Guid accountId = Guid.NewGuid();
-    private Guid userId = Guid.NewGuid();
+    private readonly Guid _accountId = Guid.NewGuid();
+
+    private readonly Guid _userId = Guid.NewGuid();
 
     public RegistrationRepositoryTests()
     {
@@ -20,11 +21,9 @@ public class RegistrationRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task Register_ShouldSaveAccountAndUserRecord()
     {
-       
-
-       var result = await TestHelpers.SetUpBaseRecords(accountId, userId, _repository);
-       result.Should().NotBeNull();
-       result.Item2.Id.Should().Be(userId);
+        var result = await TestHelpers.SetUpBaseRecords(_accountId, _userId, _repository);
+        result.Should().NotBeNull();
+        result.Item2.Id.Should().Be(_userId);
     }
 
     public async Task InitializeAsync()
@@ -34,9 +33,9 @@ public class RegistrationRepositoryTests : IAsyncLifetime
     public async Task DisposeAsync()
     {
         string deleteUserSql = "DELETE FROM app_user WHERE id = @id";
-        string deleteAccountUser = "DELETE FROM account WHERE id = @id";
+        string deleteAccountUser = "DELETE FROM user_account WHERE id = @id";
 
-        await _baseRepository.DeleteAsync(deleteUserSql, new { id = userId });
-        await _baseRepository.DeleteAsync(deleteAccountUser, new { id = accountId });
+        await _baseRepository.DeleteAsync(deleteUserSql, new { id = _userId });
+        await _baseRepository.DeleteAsync(deleteAccountUser, new { id = _accountId });
     }
 }
