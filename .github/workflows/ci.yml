@@ -39,7 +39,6 @@ jobs:
 
       - name: Run Schema Migrations
         run: dotnet ef database update --project src/Selah.Infrastructure --startup-project src/Selah.WebAPI/ --connection "Host=localhost;Port=65432;Database=postgres;User ID=postgres;Password=postgres"
-        working-directory: ../
 
       - name: Restore dependencies
         run: dotnet restore Selah.sln
