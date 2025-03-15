@@ -2,6 +2,7 @@ using MediatR;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models.Entities.ApplicationUser;
 using Selah.Infrastructure.Repository;
+using Selah.Infrastructure.Repository.Interfaces;
 using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Application.Identity;

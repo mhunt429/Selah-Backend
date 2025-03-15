@@ -66,8 +66,8 @@ public class RegisterAccount
             return new ApplicationUserEntity
             {
                 AppLastChangedBy = userId,
-                AccountId = Guid.NewGuid(),
-                Id = Guid.NewGuid(),
+                AccountId = accountId,
+                Id = userId,
                 Username = request.Username,
                 Password = _passwordHasherService.HashPassword(request.Password),
                 EncryptedEmail = _cryptoService.Encrypt(request.Email),
@@ -76,6 +76,7 @@ public class RegisterAccount
                 PhoneVerified = false,
                 EmailVerified = false,
                 EmailHash = _cryptoService.HashValue(request.Email),
+                CreatedDate = DateTimeOffset.UtcNow,
             };
         }
     }

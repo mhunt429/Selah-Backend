@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Infrastructure.Services;
 
+[ExcludeFromCodeCoverage]
 public class PlaidHttpService : IPlaidHttpService
 {
     private readonly HttpClient _httpClient;

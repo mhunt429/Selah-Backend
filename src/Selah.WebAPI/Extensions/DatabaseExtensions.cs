@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Selah.Infrastructure;
 using Selah.Infrastructure.Repository;
+using Selah.Infrastructure.Repository.Interfaces;
 
 namespace Selah.WebAPI.Extensions;
 

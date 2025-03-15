@@ -1,11 +1,15 @@
 using FluentAssertions;
 using Selah.Infrastructure.Repository;
+using Selah.Infrastructure.Repository.Interfaces;
 
 namespace Selah.Infrastructure.IntegrationTests.Repository;
 
 public class AppUserRepositoryTests : IAsyncLifetime
 {
+    private readonly AppDbContext _dbContext =  TestHelpers.BuildTestDbContext();
+    
     private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    
     private readonly IApplicationUserRepository _repository;
 
     private Guid _accountId = Guid.NewGuid();
@@ -14,7 +18,7 @@ public class AppUserRepositoryTests : IAsyncLifetime
 
     public AppUserRepositoryTests()
     {
-        _repository = new AppUserRepository(_baseRepository);
+        _repository = new AppUserRepository(_dbContext);
     }
 
     [Fact]

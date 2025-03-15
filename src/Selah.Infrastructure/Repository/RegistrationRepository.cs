@@ -26,7 +26,7 @@ public class RegistrationRepository : IRegistrationRepository
                 await _dbContext.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-                return userAccount.Id;
+                return user.Id;
             }
             catch (Exception ex)
             {
