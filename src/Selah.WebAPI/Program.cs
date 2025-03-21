@@ -8,6 +8,7 @@ using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
 using Hangfire.Dashboard.BasicAuthorization;
+using Scalar.AspNetCore;
 using Selah.Application.ApplicationUser;
 using Selah.Infrastructure.RecurringJobs;
 
@@ -53,10 +54,7 @@ public class Program
         builder.Services.AddConfiguration(configuration);
         builder.Services.AddDependencies(configuration);
 
-
-
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddOpenApi();
 
         builder.Services.AddCors(options =>
         {
@@ -104,8 +102,17 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             IdentityModelEventSource.ShowPII = true;
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.MapOpenApi();
+            
+            app.UseSwaggerUI(options => 
+                options.SwaggerEndpoint("/openapi/v1.json", "Selah.WebAPI")
+                );
+            app.UseReDoc(options =>
+            {
+                options.SpecUrl = "/openapi/v1.json";
+            });
+
+            app.MapScalarApiReference();
         }
 
         app.UseHttpsRedirection();

@@ -1,6 +1,0 @@
-@Selah.WebAPI_HostAddress = http://localhost:5052
-
-GET {{Selah.WebAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

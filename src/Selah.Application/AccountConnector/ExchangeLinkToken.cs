@@ -47,7 +47,8 @@ public class ExchangeLinkToken
                 InstitutionName = request.InstitutionName,
                 DateConnected = DateTime.UtcNow,
                 EncryptedAccessToken = _cryptoService.Encrypt(plaidTokenExchangeResponse.AccessToken),
-                TransactionSyncCursor = ""
+                TransactionSyncCursor = "",
+                ExternalEventId = plaidTokenExchangeResponse.ItemId,
             };
 
             var newId = await _accountConnectorRepository.InsertAccountConnectorRecord(dataToSave);

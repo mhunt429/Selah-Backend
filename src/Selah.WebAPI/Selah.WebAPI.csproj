@@ -21,14 +21,16 @@
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.0.36" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

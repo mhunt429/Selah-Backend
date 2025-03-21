@@ -9,17 +9,13 @@ namespace Selah.Application.Identity;
 
 public class UserLogin
 {
-    public class Command : IRequest<Response>
+    public class Command : IRequest<AccessTokenResponse>
     {
         public LoginRequest LoginRequest { get; set; }
     }
+    
 
-    public class Response
-    {
-        public AccessTokenResponse Data { get; set; }
-    }
-
-    public class Handler : IRequestHandler<Command, Response>
+    public class Handler : IRequestHandler<Command, AccessTokenResponse>
     {
         private readonly IApplicationUserRepository _repository;
         private readonly ICryptoService _cryptoService;
@@ -38,7 +34,7 @@ public class UserLogin
             _tokenService = tokenService;
         }
 
-        public async Task<Response> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<AccessTokenResponse> Handle(Command command, CancellationToken cancellationToken)
         {
             var loginRequest = command.LoginRequest;
 
@@ -49,11 +45,7 @@ public class UserLogin
 
             if (_passwordHasherService.VerifyPassword(loginRequest.Password, dbUser.Password))
             {
-                var response = new Response
-                {
-                    Data = _tokenService.GenerateAccessToken(dbUser.Id)
-                };
-                return response;
+                return _tokenService.GenerateAccessToken(dbUser.Id);
             }
 
             return null;

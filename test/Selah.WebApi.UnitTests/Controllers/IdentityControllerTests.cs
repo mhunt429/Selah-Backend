@@ -64,10 +64,7 @@ public class IdentityControllerTests
     [Fact]
     public async Task Login_ShouldReturnAccessToken()
     {
-        _mediatorMock.Setup(x => x.Send(It.IsAny<UserLogin.Command>(), default)).ReturnsAsync(new UserLogin.Response
-        {
-            Data = new AccessTokenResponse()
-        });
+        _mediatorMock.Setup(x => x.Send(It.IsAny<UserLogin.Command>(), default)).ReturnsAsync(new AccessTokenResponse());
 
         var result = await _controller.Login(new LoginRequest());
         Assert.IsType<OkObjectResult>(result);
@@ -76,7 +73,7 @@ public class IdentityControllerTests
     [Fact]
     public async Task Login_ShouldReturnUnAuthorized_OnInvalidLoginRequest()
     {
-        _mediatorMock.Setup(x => x.Send(It.IsAny<UserLogin.Command>(), default)).ReturnsAsync((UserLogin.Response)null);
+        _mediatorMock.Setup(x => x.Send(It.IsAny<UserLogin.Command>(), default)).ReturnsAsync((AccessTokenResponse)null);
         var result = await _controller.Login(new LoginRequest());
         Assert.IsType<UnauthorizedResult>(result);
     }

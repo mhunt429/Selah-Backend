@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.NameTranslation;
 using Selah.Core.Models.Entities.AccountConnector;
@@ -7,6 +8,7 @@ using Selah.Core.Models.Entities.UserAccount;
 
 namespace Selah.Infrastructure;
 
+[ExcludeFromCodeCoverage]
 public class AppDbContext: DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)

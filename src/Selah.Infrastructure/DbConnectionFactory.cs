@@ -1,14 +1,15 @@
 using System.Threading.Tasks;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using Npgsql;
 namespace Selah.Infrastructure
 {
-    
     public interface IDbConnectionFactory
     {
         public Task<IDbConnection> CreateConnectionAsync();
     }
     
+    [ExcludeFromCodeCoverage]
     public class SelahDbConnectionFactory : IDbConnectionFactory
     {
         private readonly string _connectionString;
