@@ -42,8 +42,14 @@ public class ConnectorController : ControllerBase
 
         request.UserId = userId;
 
-        bool success = await _mediator.Send(request);
+        ApiResponseResult<Unit> result = await _mediator.Send(request);
 
-        return success ? NoContent() : BadRequest();
+        switch (result.status)
+        {
+            case ResultStatus.Success:
+                return NoContent();
+            default:
+                return BadRequest();
+        }
     }
 }

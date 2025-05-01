@@ -20,12 +20,12 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        
+        DotNetEnv.Env.Load("../.env");
         // Configure services
         ConfigureServices(builder);
 
         var app = builder.Build();
-
         // Configure middleware and application behavior
         ConfigureApp(app, builder.Configuration);
 
@@ -34,6 +34,8 @@ public class Program
 
     private static IServiceCollection ConfigureServices(WebApplicationBuilder builder)
     {
+        
+        
         var configuration = builder.Configuration;
         
         //Because of the automatic dependency injection with mediatr and we have all of that in the Application Project, we just need to pass in a single IRequest instance
@@ -105,7 +107,7 @@ public class Program
             app.MapOpenApi();
             
             app.UseSwaggerUI(options => 
-                options.SwaggerEndpoint("/openapi/v1.json", "Selah.WebAPI")
+                options.SwaggerEndpoint("/openapi/v1.json", "Selah.AppHost.WebAPI")
                 );
             app.UseReDoc(options =>
             {

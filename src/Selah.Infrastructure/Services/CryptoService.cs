@@ -97,12 +97,10 @@ public class CryptoService: ICryptoService
     {
         byte[] inputBytes = Encoding.UTF8.GetBytes(plainText);
 
-        // Create a SHA256 instance and compute the hash
         using (SHA256 sha256 = SHA256.Create())
         {
             byte[] hashBytes = sha256.ComputeHash(inputBytes);
 
-            // Convert the hash bytes to a hexadecimal string
             StringBuilder hashString = new StringBuilder();
             foreach (byte b in hashBytes)
             {

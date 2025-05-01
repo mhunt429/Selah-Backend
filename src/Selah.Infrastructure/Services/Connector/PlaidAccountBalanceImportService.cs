@@ -1,4 +1,5 @@
 using Selah.Infrastructure.Repository;
+using Selah.Infrastructure.Repository.Interfaces;
 using Selah.Infrastructure.Services.Interfaces;
 
 namespace Selah.Infrastructure.Services.Connector;

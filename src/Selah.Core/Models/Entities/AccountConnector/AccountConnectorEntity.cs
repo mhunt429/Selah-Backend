@@ -6,9 +6,8 @@ namespace Selah.Core.Models.Entities.AccountConnector;
 [Table("account_connector")]
 public class AccountConnectorEntity : BaseAuditFields
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key, Column(name: "id", Order = 0)]
-    public long Id { get; set; }
+    public Guid Id { get; set; }
 
     [Column("user_id")] public Guid UserId { get; set; }
 

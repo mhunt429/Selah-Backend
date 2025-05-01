@@ -34,11 +34,13 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Install dotnet-ef Tool
-        run: dotnet tool install --global dotnet-ef
+      - name: Install Flyway
+        run: |
+          curl -L https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/10.11.0/flyway-commandline-10.11.0-linux-x64.tar.gz | tar xvz
+          sudo ln -s $PWD/flyway-10.11.0/flyway /usr/local/bin/flyway
 
-      - name: Run Schema Migrations
-        run: dotnet ef database update --project src/Selah.Infrastructure --startup-project src/Selah.WebAPI/ --connection "Host=localhost;Port=65432;Database=postgres;User ID=postgres;Password=postgres"
+      - name: Run Flyway Migrations
+        run: flyway -url=jdbc:postgresql://localhost:65432/postgres -user=postgres -password=postgres -locations=filesystem:src/Selah.Infrastructure/Migrations migrate
 
       - name: Restore dependencies
         run: dotnet restore Selah.sln

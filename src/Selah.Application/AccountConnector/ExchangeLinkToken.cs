@@ -1,4 +1,5 @@
 using MediatR;
+using Selah.Core.Models;
 using Selah.Core.Models.Entities.AccountConnector;
 using Selah.Core.Models.Plaid;
 using Selah.Infrastructure.Repository;
@@ -8,11 +9,11 @@ namespace Selah.Application.AccountConnector;
 
 public class ExchangeLinkToken
 {
-    public class Command : TokenExchangeHttpRequest, IRequest<bool>
+    public class Command : TokenExchangeHttpRequest, IRequest<ApiResponseResult<Unit>>
     {
     }
 
-    public class Handler : IRequestHandler<Command, bool>
+    public class Handler : IRequestHandler<Command, ApiResponseResult<Unit>>
     {
         private readonly IAccountConnectorRepository _accountConnectorRepository;
         private readonly ICryptoService _cryptoService;
@@ -26,16 +27,15 @@ public class ExchangeLinkToken
             _plaidHttpService = plaidHttpService;
         }
 
-        public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<ApiResponseResult<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            bool retVal = false;
             PlaidTokenExchangeResponse? plaidTokenExchangeResponse =
                 await _plaidHttpService.ExchangePublicToken(request.UserId,
                     request.PublicToken);
 
             if (plaidTokenExchangeResponse == null)
             {
-                return retVal;
+                return new ApiResponseResult<Unit>(status: ResultStatus.Failed, message: "", data: new Unit());
             }
             //If we get a token back from Plaid, save the record into the account_connector table
 
@@ -49,11 +49,12 @@ public class ExchangeLinkToken
                 EncryptedAccessToken = _cryptoService.Encrypt(plaidTokenExchangeResponse.AccessToken),
                 TransactionSyncCursor = "",
                 ExternalEventId = plaidTokenExchangeResponse.ItemId,
+                Id = Guid.CreateVersion7(),
             };
 
-            var newId = await _accountConnectorRepository.InsertAccountConnectorRecord(dataToSave);
+            await _accountConnectorRepository.InsertAccountConnectorRecord(dataToSave);
 
-            return newId > 1;
+            return new ApiResponseResult<Unit>(status: ResultStatus.Success, message: "", data: new Unit());
         }
     }
 }

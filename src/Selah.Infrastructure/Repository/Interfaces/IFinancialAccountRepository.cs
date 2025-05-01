@@ -1,16 +1,16 @@
 using Selah.Core.Models.Entities.FinancialAccount;
 
-namespace Selah.Infrastructure.Repository;
+namespace Selah.Infrastructure.Repository.Interfaces;
 
 public interface IFinancialAccountRepository
 {
     Task ImportFinancialAccountsAsync(IEnumerable<FinancialAccountEntity> accounts);
 
-    Task<long> AddAccountAsync(FinancialAccountEntity account);
+    Task<Guid> AddAccountAsync(FinancialAccountEntity account);
 
     Task<IEnumerable<FinancialAccountEntity?>> GetAccountsAsync(Guid userId);
 
-    Task<FinancialAccountEntity?> GetAccountByIdAsync(Guid userId, long id);
+    Task<FinancialAccountEntity?> GetAccountByIdAsync(Guid userId, Guid id);
 
     Task<bool> UpdateAccount(FinancialAccountEntity account);
 

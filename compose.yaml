@@ -1,14 +1,15 @@
 ﻿services:
-  selah.webapi:
-    image: selah.webapi
-    build:
-      context: .
-      dockerfile: src/Selah.WebAPI/Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    env_file: .env
+  #Uncomment this if you don't want to use Dotnet Aspire for local dev
+  #selah.webapi:
+  # image: selah.webapi
+  #build:
+  # context: .
+  #dockerfile: src/Selah.WebAPI/Dockerfile
+  #ports:
+  # - "8080:8080"
+  #environment:
+  # - ASPNETCORE_ENVIRONMENT=Development
+  #env_file: .env
 
   selah-db:
     image: postgres:14.1-alpine

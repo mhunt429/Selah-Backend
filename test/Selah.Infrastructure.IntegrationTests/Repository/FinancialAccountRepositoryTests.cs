@@ -2,12 +2,15 @@ using FluentAssertions;
 using Selah.Core.Models.Entities.AccountConnector;
 using Selah.Core.Models.Entities.FinancialAccount;
 using Selah.Infrastructure.Repository;
+using Selah.Infrastructure.Repository.Interfaces;
 
 namespace Selah.Infrastructure.IntegrationTests.Repository;
 
 public class FinancialAccountRepositoryTests : IAsyncLifetime
 {
     private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    
+    private readonly AppDbContext _dbContext =  TestHelpers.BuildTestDbContext();
 
     private readonly IFinancialAccountRepository _financialAccountRepository;
     private readonly IAccountConnectorRepository _accountConnectorRepository;
@@ -15,12 +18,12 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
     private Guid _accountId = Guid.NewGuid();
     private Guid _userId = Guid.NewGuid();
 
-    private long _connectorId;
+    private Guid _connectorId = Guid.NewGuid();
 
     public FinancialAccountRepositoryTests()
     {
-        _financialAccountRepository = new FinancialAccountRepository(TestHelpers.BuildTestDbContext());
-        _accountConnectorRepository = new AccountConnectorRepository(TestHelpers.BuildTestDbContext());
+        _financialAccountRepository = new FinancialAccountRepository(_dbContext);
+        _accountConnectorRepository = new AccountConnectorRepository(_dbContext);
     }
 
     [Fact]
@@ -84,11 +87,11 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
             ConnectorId = _connectorId,
         };
 
-        long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
+        Guid newAccountId = await _financialAccountRepository.AddAccountAsync(account);
 
         var result = await _financialAccountRepository.GetAccountByIdAsync(_userId, newAccountId);
         result.Should().NotBeNull();
-        result.Id.Should().Be(newAccountId);
+        result.Id.Should().NotBe(Guid.Empty);
         result.UserId.Should().Be(_userId);
         result.ExternalId.Should().Be("4321");
         //result.AccountMask.Should().Be("***4321");
@@ -118,7 +121,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
             ConnectorId = _connectorId,
         };
 
-        long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
+        Guid newAccountId = await _financialAccountRepository.AddAccountAsync(account);
 
         var accountUpdate = new FinancialAccountEntity
         {
@@ -154,7 +157,7 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
             ConnectorId = _connectorId,
         };
 
-        long newAccountId = await _financialAccountRepository.AddAccountAsync(account);
+        Guid newAccountId = await _financialAccountRepository.AddAccountAsync(account);
 
         var deleteResult = await _financialAccountRepository.DeleteAccountAsync(account);
         deleteResult.Should().BeTrue();
@@ -165,8 +168,8 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var registrationRepository = new RegistrationRepository(TestHelpers.BuildTestDbContext());
-        await TestHelpers.SetUpBaseRecords(_userId, _accountId, registrationRepository);
+        var registrationRepository = new RegistrationRepository(_dbContext);
+        await TestHelpers.SetUpBaseRecords(_accountId, _userId, registrationRepository);
 
         AccountConnectorEntity data = new AccountConnectorEntity
         {
@@ -176,9 +179,10 @@ public class FinancialAccountRepositoryTests : IAsyncLifetime
             InstitutionName = "Morgan Stanley",
             DateConnected = DateTimeOffset.UtcNow,
             EncryptedAccessToken = "token",
-            TransactionSyncCursor = ""
+            TransactionSyncCursor = "",
+            Id = _connectorId
         };
-        _connectorId = await _accountConnectorRepository.InsertAccountConnectorRecord(data);
+          await _accountConnectorRepository.InsertAccountConnectorRecord(data);
     }
 
     public async Task DisposeAsync()

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Selah.Core.Constants;
 using Selah.Core.Models.Entities.FinancialAccount;
 using Selah.Infrastructure.Extensions;
+using Selah.Infrastructure.Repository.Interfaces;
 
 namespace Selah.Infrastructure.Repository;
 
@@ -21,8 +22,9 @@ public class FinancialAccountRepository : IFinancialAccountRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<long> AddAccountAsync(FinancialAccountEntity account)
+    public async Task<Guid> AddAccountAsync(FinancialAccountEntity account)
     {
+        account.Id = Guid.CreateVersion7();
         await _dbContext.FinancialAccounts.AddAsync(account);
         await _dbContext.SaveChangesAsync();
         return account.Id;
@@ -33,7 +35,7 @@ public class FinancialAccountRepository : IFinancialAccountRepository
         return await _dbContext.FinancialAccounts.Where(x => x.UserId == userId).ToListAsync();
     }
 
-    public async Task<FinancialAccountEntity?> GetAccountByIdAsync(Guid userId, long id)
+    public async Task<FinancialAccountEntity?> GetAccountByIdAsync(Guid userId, Guid id)
     {
         return await _dbContext.FinancialAccounts
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);

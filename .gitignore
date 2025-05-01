@@ -455,3 +455,5 @@ tools/
 coverage/
 
 *.env
+
+**/appsettings.Development.json

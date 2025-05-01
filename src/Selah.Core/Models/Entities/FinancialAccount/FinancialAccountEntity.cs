@@ -6,11 +6,11 @@ namespace Selah.Core.Models.Entities.FinancialAccount;
 [Table("financial_account")]
 public class FinancialAccountEntity : BaseAuditFields
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+   
     [Key, Column(name: "id", Order = 0)]
-    public long Id { get; set; }
+    public Guid Id { get; set; }
 
-    [Column("connector_id")] public long ConnectorId { get; set; }
+    [Column("connector_id")] public Guid ConnectorId { get; set; }
 
     [Column("user_id")] public Guid UserId { get; set; }
 

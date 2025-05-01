@@ -7,6 +7,9 @@ namespace Selah.Infrastructure.IntegrationTests.Repository;
 public class AccountConnectorRepositoryTests : IAsyncLifetime
 {
     private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    
+    private readonly AppDbContext _dbContext =  TestHelpers.BuildTestDbContext();
+    
     private readonly IAccountConnectorRepository _accountConnectorRepository;
 
     private Guid _accountId = Guid.NewGuid();
@@ -14,7 +17,7 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
 
     public AccountConnectorRepositoryTests()
     {
-        _accountConnectorRepository = new AccountConnectorRepository(TestHelpers.BuildTestDbContext());
+        _accountConnectorRepository = new AccountConnectorRepository(_dbContext);
     }
 
     [Fact]
@@ -46,8 +49,8 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        var registrationRepository = new RegistrationRepository(TestHelpers.BuildTestDbContext());
-        await TestHelpers.SetUpBaseRecords(_userId, _accountId, registrationRepository);
+        var registrationRepository = new RegistrationRepository(_dbContext);
+        await TestHelpers.SetUpBaseRecords(_accountId,_userId, registrationRepository);
     }
 
     public async Task DisposeAsync()
