@@ -8,6 +8,8 @@ using Selah.Infrastructure;
 using Selah.WebAPI.Extensions;
 using Selah.WebAPI.Middleware;
 using Hangfire.Dashboard.BasicAuthorization;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Selah.Application.ApplicationUser;
 using Selah.Infrastructure.RecurringJobs;
@@ -20,7 +22,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         DotNetEnv.Env.Load("../.env");
         // Configure services
         ConfigureServices(builder);
@@ -34,12 +36,11 @@ public class Program
 
     private static IServiceCollection ConfigureServices(WebApplicationBuilder builder)
     {
-        
-        
         var configuration = builder.Configuration;
-        
+
         //Because of the automatic dependency injection with mediatr and we have all of that in the Application Project, we just need to pass in a single IRequest instance
-        builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssemblyContaining(typeof(GetUserById.Query)));
+        builder.Services.AddMediatR(configuration =>
+            configuration.RegisterServicesFromAssemblyContaining(typeof(GetUserById.Query)));
 
         builder.Services.AddSingleton<IDbConnectionFactory>(provider =>
         {
@@ -71,6 +72,25 @@ public class Program
 
         builder.Services.AddAuthorization();
         builder.Services.AddControllers();
+
+        builder.Services.AddOpenTelemetry()
+            .WithTracing(tracing =>
+            {
+                tracing
+                    .AddAspNetCoreInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddOtlpExporter();
+            });
+
+        builder.Logging.ClearProviders();
+        builder.Logging.AddOpenTelemetry(logging =>
+        {
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+            logging.ParseStateValues = true;
+            logging.AddOtlpExporter();
+        });
 
         return builder.Services;
     }
@@ -105,14 +125,11 @@ public class Program
         {
             IdentityModelEventSource.ShowPII = true;
             app.MapOpenApi();
-            
-            app.UseSwaggerUI(options => 
+
+            app.UseSwaggerUI(options =>
                 options.SwaggerEndpoint("/openapi/v1.json", "Selah.AppHost.WebAPI")
-                );
-            app.UseReDoc(options =>
-            {
-                options.SpecUrl = "/openapi/v1.json";
-            });
+            );
+            app.UseReDoc(options => { options.SpecUrl = "/openapi/v1.json"; });
 
             app.MapScalarApiReference();
         }

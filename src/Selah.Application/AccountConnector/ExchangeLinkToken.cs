@@ -49,7 +49,7 @@ public class ExchangeLinkToken
                 EncryptedAccessToken = _cryptoService.Encrypt(plaidTokenExchangeResponse.AccessToken),
                 TransactionSyncCursor = "",
                 ExternalEventId = plaidTokenExchangeResponse.ItemId,
-                Id = Guid.CreateVersion7(),
+                Id = Guid.CreateVersion7(DateTime.UtcNow),
             };
 
             await _accountConnectorRepository.InsertAccountConnectorRecord(dataToSave);

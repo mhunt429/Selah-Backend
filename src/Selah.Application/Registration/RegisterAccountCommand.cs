@@ -36,8 +36,8 @@ public class RegisterAccount
         public async Task<AccessTokenResponse> Handle(Command command, CancellationToken cancellationToken)
         {
             //Since this is the entry point of the account creation, initialize 2 unique ids for the account and user
-            Guid accountId = Guid.CreateVersion7();
-            Guid userId = Guid.CreateVersion7();
+            Guid accountId = Guid.CreateVersion7(DateTime.UtcNow);
+            Guid userId = Guid.CreateVersion7(DateTime.UtcNow);
 
             UserAccountEntity userAccountEntity = MapRequestToUserAccount(command, accountId, userId);
             ApplicationUserEntity applicationUserEntity = MapRequestToUser(command, accountId, userId);
@@ -56,7 +56,7 @@ public class RegisterAccount
             {
                 AppLastChangedBy = userId,
                 Id = accountId,
-                CreatedOn = DateTimeOffset.UtcNow,
+                CreatedOn = DateTime.UtcNow,
                 AccountName = request.AccountName,
             };
         }

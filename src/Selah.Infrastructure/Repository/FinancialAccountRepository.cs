@@ -24,7 +24,7 @@ public class FinancialAccountRepository : IFinancialAccountRepository
 
     public async Task<Guid> AddAccountAsync(FinancialAccountEntity account)
     {
-        account.Id = Guid.CreateVersion7();
+        account.Id = Guid.CreateVersion7(DateTime.UtcNow);
         await _dbContext.FinancialAccounts.AddAsync(account);
         await _dbContext.SaveChangesAsync();
         return account.Id;
