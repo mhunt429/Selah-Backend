@@ -43,7 +43,6 @@ public static class TestHelpers
             AccountId = accountId,
             Id = userId,
             EncryptedEmail = "email",
-            Username = Guid.NewGuid().ToString().Substring(0, 19),
             Password = "password",
             EncryptedName = "FirstName|LastName",
             EncryptedPhone = "123-123-1234",

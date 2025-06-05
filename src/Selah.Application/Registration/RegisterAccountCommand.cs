@@ -1,7 +1,9 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
+using Selah.Core.Models;
 using Selah.Core.Models.Entities.ApplicationUser;
 using Selah.Core.Models.Entities.UserAccount;
 using Selah.Infrastructure.Repository;
@@ -11,30 +13,41 @@ namespace Selah.Application.Registration;
 
 public class RegisterAccount
 {
-    public class Command : AccountRegistrationRequest, IRequest<AccessTokenResponse>
+    public class Command : AccountRegistrationRequest, IRequest<ApiResponseResult<AccessTokenResponse>>
     {
     }
 
-    public class Handler : IRequestHandler<Command, AccessTokenResponse>
+    public class Handler : IRequestHandler<Command, ApiResponseResult<AccessTokenResponse>>
     {
         private readonly IRegistrationRepository _registrationRepository;
         private readonly ICryptoService _cryptoService;
         private readonly IPasswordHasherService _passwordHasherService;
         private readonly ITokenService _tokenService;
         private readonly ILogger<Handler> _logger;
+        private readonly IValidator<AccountRegistrationRequest> _accountRegistrationRequestValidator;
 
         public Handler(IRegistrationRepository registrationRepository, ICryptoService cryptoService,
-            IPasswordHasherService passwordHasherService, ITokenService tokenService, ILogger<Handler> logger)
+            IPasswordHasherService passwordHasherService, ITokenService tokenService, ILogger<Handler> logger,
+            IValidator<AccountRegistrationRequest> accountRegistrationRequestValidator)
         {
             _registrationRepository = registrationRepository;
             _cryptoService = cryptoService;
             _passwordHasherService = passwordHasherService;
             _tokenService = tokenService;
             _logger = logger;
+            _accountRegistrationRequestValidator = accountRegistrationRequestValidator;
         }
 
-        public async Task<AccessTokenResponse> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<ApiResponseResult<AccessTokenResponse>> Handle(Command command,
+            CancellationToken cancellationToken)
         {
+            var validationResult = await _accountRegistrationRequestValidator.ValidateAsync(command);
+            if (!validationResult.IsValid)
+            {
+                return new ApiResponseResult<AccessTokenResponse>(status: ResultStatus.Failed, data: null,
+                    message: default, errors: validationResult.Errors.Select(x => x.ErrorMessage));
+            }
+
             //Since this is the entry point of the account creation, initialize 2 unique ids for the account and user
             Guid accountId = Guid.CreateVersion7(DateTime.UtcNow);
             Guid userId = Guid.CreateVersion7(DateTime.UtcNow);
@@ -47,10 +60,12 @@ public class RegisterAccount
             AccessTokenResponse accessTokenResponse = _tokenService.GenerateAccessToken(userId);
 
             _logger.LogInformation("User with id {id} was successfully created", userId);
-            return accessTokenResponse;
+            return new ApiResponseResult<AccessTokenResponse>(status: ResultStatus.Success, data: accessTokenResponse,
+                message: default, errors: default);
         }
 
-        private UserAccountEntity MapRequestToUserAccount(AccountRegistrationRequest request, Guid accountId, Guid userId)
+        private UserAccountEntity MapRequestToUserAccount(AccountRegistrationRequest request, Guid accountId,
+            Guid userId)
         {
             return new UserAccountEntity
             {
@@ -68,7 +83,6 @@ public class RegisterAccount
                 AppLastChangedBy = userId,
                 AccountId = accountId,
                 Id = userId,
-                Username = request.Username,
                 Password = _passwordHasherService.HashPassword(request.Password),
                 EncryptedEmail = _cryptoService.Encrypt(request.Email),
                 EncryptedName = _cryptoService.Encrypt($"{request.FirstName}|{request.LastName}"),

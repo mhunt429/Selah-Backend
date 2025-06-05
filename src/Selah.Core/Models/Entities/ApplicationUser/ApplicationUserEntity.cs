@@ -14,8 +14,6 @@ public class ApplicationUserEntity : BaseAuditFields
 
     [Column("encrypted_email")] public required string EncryptedEmail { get; set; }
 
-    [Column("username")] public required string Username { get; set; }
-
     [Column("password")] public required string Password { get; set; }
 
     [Column("encrypted_name")] public required string EncryptedName { get; set; }

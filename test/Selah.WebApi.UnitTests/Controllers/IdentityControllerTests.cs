@@ -43,7 +43,6 @@ public class IdentityControllerTests
                 Id = Guid.NewGuid(),
                 AccountId = Guid.NewGuid(),
                 Email = "test@test.com",
-                Username = "test",
                 FirstName = "Test",
                 LastName = "User"
             });

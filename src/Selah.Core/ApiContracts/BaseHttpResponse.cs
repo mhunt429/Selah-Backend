@@ -6,7 +6,7 @@ public class BaseHttpResponse<T>
 
     public T? Data { get; set; }
 
-    public IEnumerable<string> Errors{ get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string>? Errors{ get; set; } = Enumerable.Empty<string>();
 }
 
 /*

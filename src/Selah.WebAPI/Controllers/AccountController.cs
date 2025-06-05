@@ -7,6 +7,7 @@ using Selah.Application.Registration;
 using Selah.Core.ApiContracts;
 using Selah.Core.ApiContracts.AccountRegistration;
 using Selah.Core.ApiContracts.Identity;
+using Selah.Core.Models;
 
 namespace Selah.WebAPI.Controllers
 {
@@ -16,32 +17,35 @@ namespace Selah.WebAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IValidator<AccountRegistrationRequest> _accountRegistrationRequestValidator;
 
-        public AccountController(IMediator mediator,
-            IValidator<AccountRegistrationRequest> accountRegistrationRequestValidator)
+        public AccountController(IMediator mediator)
         {
             _mediator = mediator;
-            _accountRegistrationRequestValidator = accountRegistrationRequestValidator;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterAccount.Command command)
         {
-            ValidationResult? validationResult = _accountRegistrationRequestValidator.Validate(command);
-            if (!validationResult.IsValid)
+           
+
+            ApiResponseResult<AccessTokenResponse> result = await _mediator.Send(command);
+
+            switch (result.status)
             {
-                return BadRequest(new BaseHttpResponse<AccessTokenResponse>
-                {
-                    StatusCode = 400,
-                    Data = null,
-                    Errors = validationResult.Errors.Select(x => x.ErrorMessage)
-                });
+                case ResultStatus.Success:
+                    return Ok(new BaseHttpResponse<AccessTokenResponse>
+                    {
+                        StatusCode = 200,
+                        Data = result.data,
+                    });
+                default:
+                    return BadRequest(new BaseHttpResponse<AccessTokenResponse>
+                    {
+                        StatusCode = 400,
+                        Data = null,
+                        Errors = result.errors
+                    });
             }
-
-            AccessTokenResponse response = await _mediator.Send(command);
-
-            return Ok(response);
         }
     }
 }

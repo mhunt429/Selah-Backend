@@ -17,7 +17,6 @@ public static class AppUserMappings
             Id = user.Id,
             AccountId = user.AccountId,
             Email = cryptoService.Decrypt(user.EncryptedEmail),
-            Username = user.Username,
             FirstName = parsedName[0],
             LastName = parsedName[1],
             PhoneNumber = cryptoService.Decrypt(user.EncryptedPhone),

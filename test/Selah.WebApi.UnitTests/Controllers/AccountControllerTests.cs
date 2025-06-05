@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Selah.Application.Registration;
-using Selah.Application.Validators;
 using Selah.Core.ApiContracts.Identity;
 using Selah.Core.Models;
 using Selah.WebAPI.Controllers;
@@ -30,7 +29,7 @@ public class AccountControllerTests
             HttpContext = httpContext,
         };
 
-        _controller = new AccountController(_mediatorMock.Object, new RegisterAccountValidator())
+        _controller = new AccountController(_mediatorMock.Object)
             { ControllerContext = controllerContext };
     }
 
@@ -38,7 +37,8 @@ public class AccountControllerTests
     public async Task RegisterAsync_ShouldReturnOkResult()
     {
         _mediatorMock.Setup(x => x.Send(It.IsAny<RegisterAccount.Command>(), CancellationToken.None))
-            .ReturnsAsync(new AccessTokenResponse());
+            .ReturnsAsync(
+                new ApiResponseResult<AccessTokenResponse>(status: ResultStatus.Success, default, default, default));
 
         var command = new RegisterAccount.Command
         {
@@ -57,7 +57,8 @@ public class AccountControllerTests
     public async Task RegisterAsync_ShouldReturnBadRequestResult()
     {
         _mediatorMock.Setup(x => x.Send(It.IsAny<RegisterAccount.Command>(), CancellationToken.None))
-            .ReturnsAsync(new AccessTokenResponse());
+            .ReturnsAsync(
+                new ApiResponseResult<AccessTokenResponse>(status: ResultStatus.Failed, default, default, default));
 
         var result = await _controller.Register(new RegisterAccount.Command());
         Assert.IsType<BadRequestObjectResult>(result);
