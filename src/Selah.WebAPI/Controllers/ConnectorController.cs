@@ -44,12 +44,11 @@ public class ConnectorController : ControllerBase
 
         ApiResponseResult<Unit> result = await _mediator.Send(request);
 
-        switch (result.status)
+        if (result.status == ResultStatus.Success)
         {
-            case ResultStatus.Success:
-                return NoContent();
-            default:
-                return BadRequest();
+            return BadRequest();
         }
+
+        return NoContent();
     }
 }

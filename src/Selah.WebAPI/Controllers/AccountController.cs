@@ -26,26 +26,23 @@ namespace Selah.WebAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterAccount.Command command)
         {
-           
-
             ApiResponseResult<AccessTokenResponse> result = await _mediator.Send(command);
 
-            switch (result.status)
+            if (result.status == ResultStatus.Failed)
             {
-                case ResultStatus.Success:
-                    return Ok(new BaseHttpResponse<AccessTokenResponse>
-                    {
-                        StatusCode = 200,
-                        Data = result.data,
-                    });
-                default:
-                    return BadRequest(new BaseHttpResponse<AccessTokenResponse>
-                    {
-                        StatusCode = 400,
-                        Data = null,
-                        Errors = result.errors
-                    });
+                return BadRequest(new BaseHttpResponse<AccessTokenResponse>
+                {
+                    StatusCode = 400,
+                    Data = null,
+                    Errors = result.errors
+                });
             }
+
+            return Ok(new BaseHttpResponse<AccessTokenResponse>
+            {
+                StatusCode = 200,
+                Data = result.data,
+            });
         }
     }
 }
