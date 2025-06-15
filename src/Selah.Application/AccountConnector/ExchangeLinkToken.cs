@@ -50,6 +50,7 @@ public class ExchangeLinkToken
                 TransactionSyncCursor = "",
                 ExternalEventId = plaidTokenExchangeResponse.ItemId,
                 Id = Guid.CreateVersion7(DateTime.UtcNow),
+                OriginalInsert = DateTimeOffset.UtcNow,
             };
 
             await _accountConnectorRepository.InsertAccountConnectorRecord(dataToSave);

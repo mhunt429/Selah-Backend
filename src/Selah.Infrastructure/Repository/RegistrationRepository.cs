@@ -3,27 +3,20 @@ using Selah.Core.Models.Entities.UserAccount;
 
 namespace Selah.Infrastructure.Repository;
 
-public class RegistrationRepository : IRegistrationRepository
+public class RegistrationRepository(AppDbContext dbContext) : IRegistrationRepository
 {
-    private readonly AppDbContext _dbContext;
-
-    public RegistrationRepository(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<Guid> RegisterAccount(UserAccountEntity userAccount, ApplicationUserEntity user)
     {
-        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        using (var transaction = await dbContext.Database.BeginTransactionAsync())
         {
             try
             {
-                _dbContext.UserAccounts.Add(userAccount);
+                dbContext.UserAccounts.Add(userAccount);
 
-                _dbContext.ApplicationUsers.Add(user);
+                dbContext.ApplicationUsers.Add(user);
                 
                 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 await transaction.CommitAsync();
                 return user.Id;

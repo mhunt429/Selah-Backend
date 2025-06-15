@@ -41,7 +41,8 @@ public class RegisterAccountValidatorUnitTests
             EncryptedName = default,
             EncryptedPhone = default,
             EmailHash = default,
-            AppLastChangedBy = default
+            AppLastChangedBy = default,
+            OriginalInsert = DateTimeOffset.UtcNow,
         });
 
         var result = await _validator.TestValidateAsync(data);

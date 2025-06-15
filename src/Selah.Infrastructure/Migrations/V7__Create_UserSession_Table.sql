@@ -1,6 +1,7 @@
 CREATE TABLE user_session(
     id UUID PRIMARY KEY,
     user_id UUID,
+    session_id UUID,
     issued_at TIMESTAMPTZ,
     expires_at TIMESTAMPTZ
 )INHERITS(base_audit_table);

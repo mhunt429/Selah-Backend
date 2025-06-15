@@ -27,14 +27,16 @@ public static class TestHelpers
     /// <param name="userId"></param>
     /// <param name="accountId"></param>
     /// <param name="repository"></param>
-    public static async Task<(UserAccountEntity, ApplicationUserEntity)> SetUpBaseRecords(Guid accountId, Guid userId, IRegistrationRepository repository)
+    public static async Task<(UserAccountEntity, ApplicationUserEntity)> SetUpBaseRecords(Guid accountId, Guid userId,
+        IRegistrationRepository repository)
     {
         UserAccountEntity account = new UserAccountEntity
         {
             Id = accountId,
             AccountName = "AccountName",
             CreatedOn = DateTimeOffset.UtcNow,
-            AppLastChangedBy = userId
+            AppLastChangedBy = userId,
+            OriginalInsert = DateTimeOffset.UtcNow,
         };
 
         ApplicationUserEntity user = new ApplicationUserEntity
@@ -48,11 +50,12 @@ public static class TestHelpers
             EncryptedPhone = "123-123-1234",
             LastLoginIp = "127.0.0.1",
             EmailHash = "email",
+            OriginalInsert = DateTimeOffset.UtcNow,
         };
-        
-       
+
+
         await repository.RegisterAccount(account, user);
-        
+
         return (account, user);
     }
 

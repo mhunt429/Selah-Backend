@@ -46,17 +46,23 @@ public class IdentityController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] UserLogin.Command request)
     {
-        var command = new UserLogin.Command { LoginRequest = request };
-
-        var result = await _mediatr.Send(command);
+        UserLogin.Command.Response result = await _mediatr.Send(request);
 
         if (result == null)
         {
             return Unauthorized();
         }
 
-        return Ok(result.ToBaseHttpResponse(HttpStatusCode.OK));
+        Response.Cookies.Append("x_sessionId", result.SessionId.ToString(), new CookieOptions
+        {
+            HttpOnly = true, 
+            Secure = true, 
+            SameSite = SameSiteMode.Strict, 
+            Expires = result.SessionExpiration
+        });
+
+        return Ok(result.AccessToken.ToBaseHttpResponse(HttpStatusCode.OK));
     }
 }

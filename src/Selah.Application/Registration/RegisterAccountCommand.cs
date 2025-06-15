@@ -73,6 +73,7 @@ public class RegisterAccount
                 Id = accountId,
                 CreatedOn = DateTime.UtcNow,
                 AccountName = request.AccountName,
+                OriginalInsert = DateTimeOffset.UtcNow,
             };
         }
 
@@ -91,6 +92,7 @@ public class RegisterAccount
                 EmailVerified = false,
                 EmailHash = _cryptoService.HashValue(request.Email),
                 CreatedDate = DateTimeOffset.UtcNow,
+                OriginalInsert = DateTimeOffset.UtcNow,
             };
         }
     }

@@ -31,7 +31,8 @@ public class AccountConnectorRepositoryTests : IAsyncLifetime
             InstitutionName = "Morgan Stanley",
             DateConnected = DateTimeOffset.UtcNow,
             EncryptedAccessToken = "token",
-            TransactionSyncCursor = ""
+            TransactionSyncCursor = "",
+            OriginalInsert = DateTimeOffset.UtcNow,
         };
         await _accountConnectorRepository.InsertAccountConnectorRecord(data);
 

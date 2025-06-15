@@ -7,49 +7,42 @@ using Selah.Infrastructure.Repository.Interfaces;
 
 namespace Selah.Infrastructure.Repository;
 
-public class FinancialAccountRepository : IFinancialAccountRepository
+public class FinancialAccountRepository(AppDbContext dbContext) : IFinancialAccountRepository
 {
-    private readonly AppDbContext _dbContext;
-
-    public FinancialAccountRepository(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task ImportFinancialAccountsAsync(IEnumerable<FinancialAccountEntity> accounts)
     {
-        await _dbContext.FinancialAccounts.AddRangeAsync(accounts);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.FinancialAccounts.AddRangeAsync(accounts);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<Guid> AddAccountAsync(FinancialAccountEntity account)
     {
         account.Id = Guid.CreateVersion7(DateTime.UtcNow);
-        await _dbContext.FinancialAccounts.AddAsync(account);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.FinancialAccounts.AddAsync(account);
+        await dbContext.SaveChangesAsync();
         return account.Id;
     }
 
     public async Task<IEnumerable<FinancialAccountEntity?>> GetAccountsAsync(Guid userId)
     {
-        return await _dbContext.FinancialAccounts.Where(x => x.UserId == userId).ToListAsync();
+        return await dbContext.FinancialAccounts.Where(x => x.UserId == userId).ToListAsync();
     }
 
     public async Task<FinancialAccountEntity?> GetAccountByIdAsync(Guid userId, Guid id)
     {
-        return await _dbContext.FinancialAccounts
+        return await dbContext.FinancialAccounts
             .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
     }
 
     public async Task<bool> UpdateAccount(FinancialAccountEntity account)
     {
-        _dbContext.FinancialAccounts.Update(account);
-        return await _dbContext.SaveChangesAsync() > 0;
+        dbContext.FinancialAccounts.Update(account);
+        return await dbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> DeleteAccountAsync(FinancialAccountEntity account)
     {
-        _dbContext.Remove(account);
-        return await _dbContext.SaveChangesAsync() > 0;
+        dbContext.Remove(account);
+        return await dbContext.SaveChangesAsync() > 0;
     }
 }
