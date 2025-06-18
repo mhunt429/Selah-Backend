@@ -62,7 +62,7 @@ public class Program
         builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(policy =>
-                policy.SetIsOriginAllowed(_ => true)
+                policy.WithOrigins("http://localhost:5173", "https://selah.fi")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
@@ -133,6 +133,8 @@ public class Program
 
             app.MapScalarApiReference();
         }
+        
+        app.UseCors();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();

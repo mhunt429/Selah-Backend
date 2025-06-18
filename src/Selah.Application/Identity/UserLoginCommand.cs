@@ -62,7 +62,7 @@ public class UserLogin
                         UserId = dbUser.Id,
                         SessionId =sessionId,
                         IssuedAt = DateTimeOffset.UtcNow,
-                        ExpiresAt = DateTimeOffset.UtcNow.AddDays(7),
+                        ExpiresAt = sessionExpiration,
                         OriginalInsert = DateTimeOffset.UtcNow
                     });
 
