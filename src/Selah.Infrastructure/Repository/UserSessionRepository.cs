@@ -4,7 +4,7 @@ using Selah.Infrastructure.Repository.Interfaces;
 
 namespace Selah.Infrastructure.Repository;
 
-public class UserSessionRepository(AppDbContext dbContext): IUserSessionRepository
+public class UserSessionRepository(AppDbContext dbContext) : IUserSessionRepository
 {
     public async Task<UserSessionEntity?> GetUserSessionAsync(Guid userId)
     {
@@ -12,21 +12,29 @@ public class UserSessionRepository(AppDbContext dbContext): IUserSessionReposito
             .FirstOrDefaultAsync(x => x.UserId == userId);
     }
 
+    /// <summary>
+    /// Revoke any existing sessions for a given user before issuing a new one
+    /// </summary>
+    /// <param name="userSession"></param>
     public async Task IssueSession(UserSessionEntity userSession)
     {
+        await RevokeSessionsByUser(userSession.UserId, false);
         await dbContext.UserSessions.AddAsync(userSession);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task RevokeSession(Guid userId)
+    public async Task RevokeSessionsByUser(Guid userId, bool autocommit)
     {
-        UserSessionEntity? userSession =
-            await dbContext.UserSessions.FirstOrDefaultAsync(x => x.SessionId == userId);
+        List<UserSessionEntity>? userSessions =
+            await (dbContext.UserSessions.Where(x => x.UserId == userId)).ToListAsync();
 
-        if (userSession != null)
+        if (userSessions.Any())
         {
-            dbContext.UserSessions.Remove(userSession);
-            await dbContext.SaveChangesAsync();
+            dbContext.UserSessions.RemoveRange(userSessions);
+            if (autocommit)
+            {
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 

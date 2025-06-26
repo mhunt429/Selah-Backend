@@ -1,6 +1,6 @@
 CREATE TABLE user_session(
     id UUID PRIMARY KEY,
-    user_id UUID,
+    user_id UUID REFERENCES app_user(id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED,
     session_id UUID,
     issued_at TIMESTAMPTZ,
     expires_at TIMESTAMPTZ

@@ -1,8 +1,8 @@
 CREATE TABLE financial_account
 (
     id                     UUID Primary KEY,
-    user_id                UUID REFERENCES app_user (id) ON DELETE SET NULL,
-    connector_id           UUID REFERENCES account_connector (id) ON DELETE SET NULL,
+    user_id                UUID REFERENCES app_user (id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED,
+    connector_id           UUID REFERENCES account_connector (id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED,
     external_id            TEXT,
     current_balance        DECIMAL,
     account_mask           VARCHAR(16),

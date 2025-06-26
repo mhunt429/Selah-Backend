@@ -8,7 +8,7 @@ public interface IUserSessionRepository
     
     Task IssueSession(UserSessionEntity userSession);
     
-    Task RevokeSession(Guid userId);
+    Task RevokeSessionsByUser(Guid userId, bool autocommit);
     
     Task UpdateSession(UserSessionEntity userSession);
 }
