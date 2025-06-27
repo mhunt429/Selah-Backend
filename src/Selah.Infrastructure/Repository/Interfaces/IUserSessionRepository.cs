@@ -10,5 +10,4 @@ public interface IUserSessionRepository
     
     Task RevokeSessionsByUser(Guid userId, bool autocommit);
     
-    Task UpdateSession(UserSessionEntity userSession);
 }

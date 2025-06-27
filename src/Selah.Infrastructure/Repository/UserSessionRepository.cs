@@ -37,10 +37,4 @@ public class UserSessionRepository(AppDbContext dbContext) : IUserSessionReposit
             }
         }
     }
-
-    public async Task UpdateSession(UserSessionEntity userSession)
-    {
-        dbContext.UserSessions.Update(userSession);
-        await dbContext.SaveChangesAsync();
-    }
 }
