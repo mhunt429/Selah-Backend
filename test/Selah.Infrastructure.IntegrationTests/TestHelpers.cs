@@ -59,7 +59,7 @@ public static class TestHelpers
         return (account, user);
     }
 
-    public static async Task TearDownBaseRecords(Guid userId, Guid accountId, IBaseRepository repository)
+    public static async Task TearDownBaseRecords(Guid userId, Guid accountId, BaseRepository repository)
     {
         string deleteUserSql = "DELETE FROM app_user WHERE id = @id";
         string deleteAccountUser = "DELETE FROM user_account WHERE id = @id";

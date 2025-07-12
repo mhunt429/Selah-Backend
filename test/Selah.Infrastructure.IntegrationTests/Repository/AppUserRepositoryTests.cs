@@ -8,7 +8,7 @@ public class AppUserRepositoryTests : IAsyncLifetime
 {
     private readonly AppDbContext _dbContext =  TestHelpers.BuildTestDbContext();
     
-    private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    private readonly BaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
     
     private readonly IApplicationUserRepository _repository;
 

@@ -6,7 +6,7 @@ namespace Selah.Infrastructure.IntegrationTests.Repository;
 
 public class AccountConnectorRepositoryTests : IAsyncLifetime
 {
-    private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    private readonly BaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
     
     private readonly AppDbContext _dbContext =  TestHelpers.BuildTestDbContext();
     

@@ -3,7 +3,7 @@ using Dapper;
 
 namespace Selah.Infrastructure.Repository;
 
-public class BaseRepository : IBaseRepository
+public class BaseRepository 
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
 

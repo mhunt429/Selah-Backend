@@ -14,7 +14,8 @@ CREATE TABLE financial_account
 ) INHERITS(base_audit_table);
 
 CREATE INDEX fa_connectorId on financial_account (connector_id);
-CREATE INDEX fa_userId ON financial_account (user_id)
+CREATE INDEX fa_userId ON financial_account (user_id);
+CREATE INDEX fa_externalId on financial_account(external_id);
 
 /*
  ROLLBACK DROP INDEX fa_connectorId;

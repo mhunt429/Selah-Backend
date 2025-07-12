@@ -23,7 +23,7 @@ public static class DatabaseExtensions
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
 
-        services.AddScoped<IBaseRepository, BaseRepository>()
+        services.AddScoped<BaseRepository>()
             .AddScoped<IRegistrationRepository, RegistrationRepository>()
             .AddScoped<IApplicationUserRepository, AppUserRepository>()
             .AddScoped<IAccountConnectorRepository, AccountConnectorRepository>()

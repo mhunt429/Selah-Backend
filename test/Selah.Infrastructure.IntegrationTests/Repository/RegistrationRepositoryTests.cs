@@ -5,7 +5,7 @@ namespace Selah.Infrastructure.IntegrationTests.Repository;
 
 public class RegistrationRepositoryTests : IAsyncLifetime
 {
-    private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    private readonly BaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
 
     private readonly RegistrationRepository _repository;
 

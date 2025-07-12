@@ -7,7 +7,7 @@ namespace Selah.Infrastructure.IntegrationTests.Repository;
 
 public class SessionRepositoryTests : IAsyncLifetime
 {
-    private readonly IBaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
+    private readonly BaseRepository _baseRepository = new BaseRepository(TestHelpers.TestDbFactory);
     private readonly AppDbContext _dbContext = TestHelpers.BuildTestDbContext();
 
     private Guid _accountId = Guid.NewGuid();
